@@ -22,12 +22,12 @@ impl AccountState {
 pub type GlobalState = HashMap<Address, AccountState>;
 
 pub struct MachineState {
-    pc: usize,
-    gas: U256,
-    memory: Vec<U256>,
-    active_words_memory_idx: usize,
-    storage: HashMap<U256, U256>,
-    stack: Vec<U256>,
+    pub pc: usize,
+    pub gas: U256,
+    pub memory: Vec<U256>,
+    pub active_words_memory_idx: usize,
+    pub storage: HashMap<U256, U256>,
+    pub stack: Vec<U256>,
 }
 
 impl MachineState {
@@ -67,40 +67,40 @@ impl AccruedSubstate {
 
 pub struct Input {
     ///  the address of the account which owns the code that is executing
-    code_owner: Address,
+    pub code_owner: Address,
 
     /// the sender address of the transaction that originated this execution
-    origin: Address,
+    pub origin: Address,
 
     /// the price of gas in the transaction that originated this execution
-    price: U256,
+    pub price: U256,
 
     /// the byte array that is the input data to this execution;
     /// if the execution agent is a transaction, this would
     /// be the transaction data
-    data: Vec<u8>,
+    pub data: Vec<u8>,
 
     /// the address of the account which caused the
     /// code to be executing; if the execution agent is a
     /// transaction, this would be the transaction sender
-    sender: Address,
+    pub sender: Address,
 
     /// the value, in Wei, passed to this account as
     /// part of the same procedure as execution; if the
     /// execution agent is a transaction, this would be the
     /// transaction value
-    value: U256,
+    pub value: U256,
 
     /// the value, in Wei, passed to this account as
     /// part of the same procedure as execution; if the
     /// execution agent is a transaction, this would be the
     /// transaction value
-    bytecode: Vec<u8>,
+    pub bytecode: Vec<u8>,
 
     /// the depth of the present message-call or
     /// contract-creation (i.e. the number of CALLs or
     /// CREATE(2)s being executed at present)
-    depth: usize,
+    pub depth: usize,
 }
 
 impl Input {
@@ -124,3 +124,5 @@ pub struct Log {
     data: String,
     topics: Vec<String>,
 }
+
+pub type Opcodes = HashMap<u8, ()>;

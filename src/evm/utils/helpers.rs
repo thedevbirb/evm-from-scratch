@@ -1,3 +1,5 @@
+use primitive_types::U256;
+
 use super::types::{Address, GlobalState};
 
 /// Models the EMPTY function in the yellow paper
