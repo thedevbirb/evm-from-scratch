@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use evm_from_scratch_new::evm::{
     evm::EVM,
     utils::{
-        errors::{EVMError, NoBytecodeError, NoOpcodeError},
+        errors::EVMError,
         test_types::EvmTest,
-        types::{AccountState, AccruedSubstate, GlobalState, Input, MachineState},
+        types::{AccountState, ExecutionContext},
     },
 };
 
@@ -27,24 +27,20 @@ fn main() -> Result<(), EVMError> {
 
         let code: Vec<u8> = hex::decode(&test.code.bin).unwrap();
 
-        let global_state: GlobalState = if let Some(gs) = &test.state {
+        let mut ctx = ExecutionContext::new();
+        ctx.global_state = if let Some(gs) = &test.state {
             gs.iter()
                 .map(|(k, v)| (k.clone(), AccountState::from(v)))
                 .collect()
         } else {
             HashMap::new()
         };
-        let machine_state = MachineState::new();
-        let accrued_substate = AccruedSubstate::new();
-        let mut input = Input::new_demo();
-        input.bytecode = code;
+        ctx.input.bytecode = code;
 
-        let mut result = EVM::execute(global_state, machine_state, accrued_substate, input)?;
-
-        println!("{:?}", NoOpcodeError::new(8));
+        let mut result = EVM::execute(ctx)?;
 
         // Reverse the order of the stack for checking the tests
-        result.machine_state.stack.reverse();
+        result.ctx.machine_state.stack.reverse();
 
         let mut expected_stack: Vec<U256> = Vec::new();
         if let Some(ref stacks) = test.expect.stack {
@@ -53,10 +49,10 @@ fn main() -> Result<(), EVMError> {
             }
         }
 
-        let mut matching = result.machine_state.stack.len() == expected_stack.len();
+        let mut matching = result.ctx.machine_state.stack.len() == expected_stack.len();
         if matching {
-            for i in 0..result.machine_state.stack.len() {
-                if result.machine_state.stack[i] != expected_stack[i] {
+            for i in 0..result.ctx.machine_state.stack.len() {
+                if result.ctx.machine_state.stack[i] != expected_stack[i] {
                     matching = false;
                     break;
                 }
@@ -77,7 +73,7 @@ fn main() -> Result<(), EVMError> {
 
             println!("Actual success: {:?}", result.output.success);
             println!("Actual stack: [");
-            for v in result.machine_state.stack {
+            for v in result.ctx.machine_state.stack {
                 println!("  {:#X},", v);
             }
             println!("]\n");

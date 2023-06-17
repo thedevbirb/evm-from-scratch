@@ -1,46 +1,37 @@
 use crate::evm::utils::types::Output;
 
-use super::utils::{
-    errors::{EVMError, NoBytecodeError, NoOpcodeError},
-    helpers::get_opcodes,
-    types::{AccruedSubstate, EVMReturnData, GlobalState, Input, MachineState},
-};
+use super::utils::constants::STOP;
+use super::utils::types::EVMReturnData;
+use super::utils::{errors::EVMError, helpers::get_opcodes, types::ExecutionContext};
 
 pub struct EVM {}
 
 impl EVM {
-    pub fn execute(
-        mut global_state: GlobalState,
-        mut machine_state: MachineState,
-        mut accrued_substate: AccruedSubstate,
-        mut input: Input,
-    ) -> Result<EVMReturnData, EVMError> {
+    pub fn execute(mut ctx: ExecutionContext) -> Result<EVMReturnData, EVMError> {
         let opcodes = get_opcodes();
 
-        while machine_state.pc < input.bytecode.len() {
-            let opcode = input
+        while ctx.machine_state.pc < ctx.input.bytecode.len() {
+            let opcode = ctx
+                .input
                 .bytecode
-                .get(machine_state.pc)
-                .ok_or(EVMError::NoBytecodeError(NoBytecodeError::new()))?;
+                .get(ctx.machine_state.pc)
+                .ok_or(EVMError::NoBytecodeError(ctx.clone()))?;
+
+            if opcode == &STOP {
+                break;
+            }
 
             let runner = opcodes
                 .get(opcode)
-                .ok_or(EVMError::NoOpcodeError(NoOpcodeError::new(*opcode)))?;
+                .ok_or(EVMError::NoOpcodeError(*opcode, ctx.clone()))?;
 
-            runner(
-                &mut global_state,
-                &mut machine_state,
-                &mut accrued_substate,
-                &mut input,
-            )?;
+            runner(&mut ctx)?;
 
-            machine_state.pc += 1;
+            ctx.machine_state.pc += 1;
         }
 
         Ok(EVMReturnData {
-            global_state,
-            machine_state,
-            accrued_substate,
+            ctx,
             output: Output { success: true },
         })
     }

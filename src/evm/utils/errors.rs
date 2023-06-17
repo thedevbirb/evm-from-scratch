@@ -1,76 +1,54 @@
-use std::{
-    backtrace::Backtrace,
-    error,
-    fmt::{self, write, Debug},
-};
+use std::{error::Error, fmt};
 
-#[derive(Debug)]
+use super::types::ExecutionContext;
+
 pub enum EVMError {
-    NoBytecodeError(NoBytecodeError),
-    EmptyStack,
-    FromStrRadix,
-    NoOpcodeError(NoOpcodeError),
-}
-
-#[derive(Debug)]
-pub struct NoBytecodeError {
-    message: String,
-    backtrace: Backtrace,
-}
-
-pub struct NoOpcodeError {
-    message: String,
-    expect: u8,
-    backtrace: Backtrace,
-}
-
-impl NoBytecodeError {
-    pub fn new() -> Self {
-        Self {
-            message: String::from("No bytecode found"),
-            backtrace: Backtrace::force_capture(),
-        }
-    }
-}
-
-impl NoOpcodeError {
-    pub fn new(opcode: u8) -> Self {
-        Self {
-            message: String::from("No opcode found"),
-            expect: opcode,
-            backtrace: Backtrace::force_capture(),
-        }
-    }
-}
-
-impl fmt::Debug for NoOpcodeError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        writeln!(f, "NoOpcodeError")
-    }
+    NoBytecodeError(ExecutionContext),
+    FromStrRadixError(String, ExecutionContext),
+    NoOpcodeError(u8, ExecutionContext),
+    EmptyStackError(ExecutionContext),
 }
 
 impl fmt::Display for EVMError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            EVMError::NoBytecodeError(e) => {
-                let msg = &e.message;
-                let bt = &e.backtrace;
-                write!(f, "{msg}: {bt}")
+            EVMError::EmptyStackError(_) => {
+                write!(f, "cannot pop from empty stack")
             }
-            EVMError::NoOpcodeError(e) => {
-                let msg = &e.message;
-                let bt = &e.backtrace;
-                let opcode = &e.expect;
-                write!(f, "{msg} {opcode}: {bt}")
+            EVMError::NoOpcodeError(op, _) => {
+                write!(f, "cannot find opcode {:x?}", op)
             }
-            EVMError::EmptyStack => {
-                write!(f, "empty stack")
+            EVMError::NoBytecodeError(ctx) => {
+                write!(f, "cannot find code at pc {}", ctx.machine_state.pc)
             }
-            EVMError::FromStrRadix => {
-                write!(f, "could not convert hex string to U256")
+            EVMError::FromStrRadixError(..) => {
+                write!(f, "cannot parse string to hex")
             }
         }
     }
 }
 
-impl error::Error for EVMError {}
+impl fmt::Debug for EVMError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            EVMError::NoBytecodeError(ctx) => {
+                write!(f, "NoBytecodeError\n    ctx: {:#x?}", ctx)
+            }
+            EVMError::FromStrRadixError(str, ctx) => {
+                write!(
+                    f,
+                    "FromStrRadixError\n    str: {},\n    ctx: {:#x?}",
+                    str, ctx
+                )
+            }
+            EVMError::NoOpcodeError(op, ctx) => {
+                write!(f, "NoOpcodeError\n    op: {:x},\n    ctx: {:#x?}", op, ctx)
+            }
+            EVMError::EmptyStackError(ctx) => {
+                write!(f, "EmptyStackError\n    ctx: {:#x?}", ctx)
+            }
+        }
+    }
+}
+
+impl Error for EVMError {}

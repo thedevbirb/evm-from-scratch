@@ -1,11 +1,14 @@
-use crate::evm::utils::types::{GlobalState, MachineState, AccruedSubstate, Input, OpcodeResult};
+use crate::evm::utils::{
+    errors::EVMError,
+    types::{ExecutionContext, OpcodeResult},
+};
 
 // 0x50
-pub fn pop(
-    _global_state: &mut GlobalState,
-    machine_state: &mut MachineState,
-    _accrued_substate: &mut AccruedSubstate,
-    input: &mut Input,
-) -> OpcodeResult {
+pub fn pop(ctx: &mut ExecutionContext) -> OpcodeResult {
+    let _ = ctx
+        .machine_state
+        .stack
+        .pop()
+        .ok_or(EVMError::EmptyStackError(ctx.clone()));
     Ok(())
 }

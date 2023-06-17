@@ -4,8 +4,28 @@ use primitive_types::U256;
 
 use super::{constants::KECCAK_EMPTY, errors::EVMError};
 
+#[derive(Debug, Clone)]
+pub struct ExecutionContext {
+    pub global_state: GlobalState,
+    pub machine_state: MachineState,
+    pub accrued_substate: AccruedSubstate,
+    pub input: Input,
+}
+
+impl ExecutionContext {
+    pub fn new() -> Self {
+        Self {
+            global_state: GlobalState::new(),
+            machine_state: MachineState::new(),
+            accrued_substate: AccruedSubstate::new(),
+            input: Input::new_demo(),
+        }
+    }
+}
+
 pub type Address = String;
 
+#[derive(Debug, Clone)]
 pub struct AccountState {
     pub nonce: usize,
     pub balance: U256,
@@ -31,6 +51,7 @@ impl AccountState {
 pub type GlobalState = HashMap<Address, AccountState>;
 pub type Storage = HashMap<U256, U256>;
 
+#[derive(Debug, Clone)]
 pub struct MachineState {
     pub pc: usize,
     pub gas: U256,
@@ -53,6 +74,7 @@ impl MachineState {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct AccruedSubstate {
     self_destruct_set: HashSet<Address>,
     logs: Vec<Log>,
@@ -75,6 +97,7 @@ impl AccruedSubstate {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct Input {
     ///  the address of the account which owns the code that is executing
     pub code_owner: Address,
@@ -131,14 +154,13 @@ pub struct Output {
 }
 
 pub struct EVMReturnData {
-    pub global_state: GlobalState,
-    pub machine_state: MachineState,
-    pub accrued_substate: AccruedSubstate,
+    pub ctx: ExecutionContext,
     pub output: Output,
 }
 
-pub type OpcodeResult = Result<(), EVMError>;
+pub type OpcodeResult<'a> = Result<(), EVMError>;
 
+#[derive(Debug, Clone)]
 pub struct Log {
     address: Address,
     data: String,
@@ -147,7 +169,5 @@ pub struct Log {
 
 pub type Logs = Vec<Log>;
 
-pub type Opcode = Box<
-    dyn Fn(&mut GlobalState, &mut MachineState, &mut AccruedSubstate, &mut Input) -> OpcodeResult,
->;
+pub type Opcode = Box<dyn Fn(&mut ExecutionContext) -> OpcodeResult>;
 pub type Opcodes = HashMap<u8, Opcode>;

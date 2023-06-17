@@ -1,13 +1,8 @@
 use std::collections::HashMap;
 
-use primitive_types::U256;
-
 use crate::evm::opcodes;
 
-use super::{
-    errors::EVMError,
-    types::{Address, GlobalState, Opcodes},
-};
+use super::types::{Address, GlobalState, Opcodes};
 
 /// Models the EMPTY function in the yellow paper
 pub fn is_account_empty(state: GlobalState, address: Address) -> bool {
@@ -33,7 +28,8 @@ pub fn pop_n<T>(mut stack: Vec<T>, n: usize) -> Vec<Option<T>> {
     result
 }
 
-pub fn pop_n_err<T>(mut stack: Vec<T>, n: usize) -> Result<Vec<T>, EVMError> {
+/// Returns a vector of length `n` in which all elements are indeed present
+pub fn pop_n_err<T>(stack: &mut Vec<T>, n: usize) -> Result<Vec<T>, ()> {
     let mut result = Vec::with_capacity(n);
 
     for _i in 1..=n {
@@ -43,7 +39,7 @@ pub fn pop_n_err<T>(mut stack: Vec<T>, n: usize) -> Result<Vec<T>, EVMError> {
                 result.push(v);
             }
             None => {
-                return Err(EVMError::EmptyStack);
+                return Err(());
             }
         }
     }
@@ -53,7 +49,7 @@ pub fn pop_n_err<T>(mut stack: Vec<T>, n: usize) -> Result<Vec<T>, EVMError> {
 
 /// Convert from hex string of even length to a vector of bytes
 /// The `reverse` option adds the last significant byte in the first position
-pub fn bytes_from_hex_str(str: &str, reverse: bool) -> Result<Vec<u8>, EVMError> {
+pub fn bytes_from_hex_str(str: &str, reverse: bool) -> Result<Vec<u8>, ()> {
     if reverse {
         todo!();
     }
@@ -69,9 +65,10 @@ pub fn bytes_from_hex_str(str: &str, reverse: bool) -> Result<Vec<u8>, EVMError>
 
     let mut i = if is_0x_based { 2 } else { 0 };
 
-    while let Some(byte_str) = str.get(i..i + 1) {
-        let byte = u8::from_str_radix(byte_str, 16).map_err(|_| EVMError::FromStrRadix)?;
+    while let Some(byte_str) = str.get(i..=i + 1) {
+        let byte = u8::from_str_radix(byte_str, 16).or_else(|_| Err(()))?;
         vec.push(byte);
+        i += 2;
     }
 
     Ok(vec)
@@ -81,9 +78,9 @@ pub fn get_opcodes() -> Opcodes {
     let mut opcodes: Opcodes = HashMap::new();
 
     opcodes.insert(0x00, Box::new(opcodes::stop_and_arithmetic::stop));
-    //    opcodes.insert(0x01, Box::new(opcodes::arithmetic::add));
-    //    opcodes.insert(0x02, Box::new(opcodes::arithmetic::mul));
-    //    opcodes.insert(0x03, Box::new(opcodes::arithmetic::sub));
+    opcodes.insert(0x01, Box::new(opcodes::stop_and_arithmetic::add));
+    opcodes.insert(0x02, Box::new(opcodes::stop_and_arithmetic::mul));
+    opcodes.insert(0x03, Box::new(opcodes::stop_and_arithmetic::sub));
     //    opcodes.insert(0x04, Box::new(opcodes::arithmetic::div));
     //    opcodes.insert(0x05, Box::new(opcodes::arithmetic::s_div));
     //    opcodes.insert(0x06, Box::new(opcodes::arithmetic::modulo));
@@ -135,7 +132,7 @@ pub fn get_opcodes() -> Opcodes {
     //    opcodes.insert(0x48, Box::new(opcodes::block::basefee));
     //
     //    // opcodes.insert(0x0b, Box::new(opcodes::sign_extend));
-    //    opcodes.insert(0x50, Box::new(opcodes::stack::pop));
+    opcodes.insert(0x50, Box::new(opcodes::stack_memory_storage_flow::pop));
     //    opcodes.insert(0x51, Box::new(opcodes::memory::mload));
     //    opcodes.insert(0x52, Box::new(opcodes::memory::mstore));
     //    opcodes.insert(0x53, Box::new(opcodes::memory::mstore8));
