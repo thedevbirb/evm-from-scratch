@@ -2,12 +2,17 @@ use std::collections::{HashMap, HashSet};
 
 use primitive_types::U256;
 
+use super::{constants::KECCAK_EMPTY, errors::EVMError};
+
 pub type Address = String;
 
 pub struct AccountState {
     pub nonce: usize,
     pub balance: U256,
-    //todo should add codeHash?
+    pub code_hash: U256,
+    pub code: Vec<u8>,
+    pub storage_root: U256,
+    pub storage: Storage,
 }
 
 impl AccountState {
@@ -15,11 +20,16 @@ impl AccountState {
         AccountState {
             nonce: 0,
             balance: U256::zero(),
+            code_hash: KECCAK_EMPTY,
+            code: Vec::new(),
+            storage_root: KECCAK_EMPTY,
+            storage: HashMap::new(),
         }
     }
 }
 
 pub type GlobalState = HashMap<Address, AccountState>;
+pub type Storage = HashMap<U256, U256>;
 
 pub struct MachineState {
     pub pc: usize,
@@ -91,10 +101,7 @@ pub struct Input {
     /// transaction value
     pub value: U256,
 
-    /// the value, in Wei, passed to this account as
-    /// part of the same procedure as execution; if the
-    /// execution agent is a transaction, this would be the
-    /// transaction value
+    /// the byte array that is the machine code to be executed.
     pub bytecode: Vec<u8>,
 
     /// the depth of the present message-call or
@@ -119,10 +126,28 @@ impl Input {
     }
 }
 
+pub struct Output {
+    pub success: bool,
+}
+
+pub struct EVMReturnData {
+    pub global_state: GlobalState,
+    pub machine_state: MachineState,
+    pub accrued_substate: AccruedSubstate,
+    pub output: Output,
+}
+
+pub type OpcodeResult = Result<(), EVMError>;
+
 pub struct Log {
     address: Address,
     data: String,
     topics: Vec<String>,
 }
 
-pub type Opcodes = HashMap<u8, ()>;
+pub type Logs = Vec<Log>;
+
+pub type Opcode = Box<
+    dyn Fn(&mut GlobalState, &mut MachineState, &mut AccruedSubstate, &mut Input) -> OpcodeResult,
+>;
+pub type Opcodes = HashMap<u8, Opcode>;
