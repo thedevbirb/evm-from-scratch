@@ -17,7 +17,7 @@ pub struct EvmResult {
 }
 
 fn main() -> Result<(), EVMError> {
-    let text = std::fs::read_to_string("./test.json").unwrap();
+    let text = std::fs::read_to_string("./difficult_test.json").unwrap();
     let data: Vec<EvmTest> = serde_json::from_str(&text).unwrap();
 
     let total = data.len();

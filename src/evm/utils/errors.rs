@@ -1,5 +1,7 @@
 use std::{error::Error, fmt};
 
+use primitive_types::U256;
+
 use super::types::ExecutionContext;
 
 pub enum EVMError {
@@ -7,6 +9,7 @@ pub enum EVMError {
     FromStrRadixError(String, ExecutionContext),
     NoOpcodeError(u8, ExecutionContext),
     EmptyStackError(ExecutionContext),
+    U256ToUSizeError(U256, ExecutionContext),
 }
 
 impl fmt::Display for EVMError {
@@ -23,6 +26,9 @@ impl fmt::Display for EVMError {
             }
             EVMError::FromStrRadixError(..) => {
                 write!(f, "cannot parse string to hex")
+            }
+            EVMError::U256ToUSizeError(val, _) => {
+                write!(f, "cannot convert from U256 {:x?} to usize", val)
             }
         }
     }
@@ -46,6 +52,13 @@ impl fmt::Debug for EVMError {
             }
             EVMError::EmptyStackError(ctx) => {
                 write!(f, "EmptyStackError\n    ctx: {:#x?}", ctx)
+            }
+            EVMError::U256ToUSizeError(val, ctx) => {
+                write!(
+                    f,
+                    "U256ToUSizeError\n    val: {:x}\n    ctx: {:#x?}",
+                    val, ctx
+                )
             }
         }
     }

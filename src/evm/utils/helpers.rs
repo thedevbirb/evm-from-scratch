@@ -1,8 +1,13 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt::format};
+
+use primitive_types::U256;
 
 use crate::evm::opcodes;
 
-use super::types::{Address, GlobalState, Opcodes};
+use super::{
+    errors::EVMError,
+    types::{Address, ExecutionContext, GlobalState, Opcodes},
+};
 
 /// Models the EMPTY function in the yellow paper
 pub fn is_account_empty(state: GlobalState, address: Address) -> bool {
@@ -18,31 +23,19 @@ pub fn is_account_dead(state: GlobalState, address: Address) -> bool {
     state.get(&address).is_none() || is_account_empty(state, address)
 }
 
-pub fn pop_n<T>(mut stack: Vec<T>, n: usize) -> Vec<Option<T>> {
-    let mut result = Vec::with_capacity(n);
-
-    for _i in 1..=n {
-        result.push(stack.pop());
-    }
-
-    result
-}
-
 /// Returns a vector of length `n` in which all elements are indeed present
-pub fn pop_n_err<T>(stack: &mut Vec<T>, n: usize) -> Result<Vec<T>, ()> {
+pub fn pop_n(ctx: &mut ExecutionContext, n: usize) -> Result<Vec<U256>, EVMError> {
+    if ctx.machine_state.stack.len() < n {
+        return Err(EVMError::EmptyStackError(ctx.clone()));
+    }
+
     let mut result = Vec::with_capacity(n);
 
-    for _i in 1..=n {
-        let value = stack.pop();
-        match value {
-            Some(v) => {
-                result.push(v);
-            }
-            None => {
-                return Err(());
-            }
+    (0..n).for_each(|_| {
+        if let Some(v) = ctx.machine_state.stack.pop() {
+            result.push(v);
         }
-    }
+    });
 
     Ok(result)
 }
@@ -72,6 +65,25 @@ pub fn bytes_from_hex_str(str: &str, reverse: bool) -> Result<Vec<u8>, ()> {
     }
 
     Ok(vec)
+}
+
+/// Convert bytes array to hex string, with each byte mapped to two chars
+pub fn hex_string_from_bytes(vec: &[u8]) -> String {
+    let mut str = String::with_capacity(vec.len() * 2);
+
+    vec.iter()
+        .for_each(|byte| str.push_str(&hex_string_from_byte(*byte)));
+
+    str
+}
+
+/// Convert byte to hex string made of two chars
+pub fn hex_string_from_byte(byte: u8) -> String {
+    if byte < 16 {
+        format!("0{:x}", byte)
+    } else {
+        format!("{:x}", byte)
+    }
 }
 
 pub fn get_opcodes() -> Opcodes {
@@ -133,8 +145,8 @@ pub fn get_opcodes() -> Opcodes {
     //
     //    // opcodes.insert(0x0b, Box::new(opcodes::sign_extend));
     opcodes.insert(0x50, Box::new(opcodes::stack_memory_storage_flow::pop));
-    //    opcodes.insert(0x51, Box::new(opcodes::memory::mload));
-    //    opcodes.insert(0x52, Box::new(opcodes::memory::mstore));
+    opcodes.insert(0x51, Box::new(opcodes::stack_memory_storage_flow::mload));
+    opcodes.insert(0x52, Box::new(opcodes::stack_memory_storage_flow::mstore));
     //    opcodes.insert(0x53, Box::new(opcodes::memory::mstore8));
     //    opcodes.insert(0x54, Box::new(opcodes::storage::sload));
     //    opcodes.insert(0x55, Box::new(opcodes::storage::sstore));
