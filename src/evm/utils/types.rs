@@ -55,7 +55,7 @@ pub type Storage = HashMap<U256, U256>;
 pub struct MachineState {
     pub pc: usize,
     pub gas: U256,
-    pub memory: HashMap<usize, u8>,
+    pub memory: Vec<u8>,
     pub active_words_memory_idx: usize,
     pub storage: HashMap<U256, U256>,
     pub stack: Vec<U256>,
@@ -66,7 +66,7 @@ impl MachineState {
         MachineState {
             pc: 0,
             gas: U256::MAX,
-            memory: HashMap::new(),
+            memory: Vec::with_capacity(1024),
             active_words_memory_idx: 0,
             storage: HashMap::new(),
             stack: Vec::new(),

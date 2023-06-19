@@ -147,7 +147,7 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0x50, Box::new(opcodes::stack_memory_storage_flow::pop));
     opcodes.insert(0x51, Box::new(opcodes::stack_memory_storage_flow::mload));
     opcodes.insert(0x52, Box::new(opcodes::stack_memory_storage_flow::mstore));
-    //    opcodes.insert(0x53, Box::new(opcodes::memory::mstore8));
+    opcodes.insert(0x53, Box::new(opcodes::stack_memory_storage_flow::mstore8));
     //    opcodes.insert(0x54, Box::new(opcodes::storage::sload));
     //    opcodes.insert(0x55, Box::new(opcodes::storage::sstore));
     //    opcodes.insert(0x56, Box::new(opcodes::stack::jump));

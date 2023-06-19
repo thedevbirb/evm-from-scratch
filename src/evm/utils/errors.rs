@@ -10,6 +10,7 @@ pub enum EVMError {
     NoOpcodeError(u8, ExecutionContext),
     EmptyStackError(ExecutionContext),
     U256ToUSizeError(U256, ExecutionContext),
+    U256ToU8Error(U256, ExecutionContext),
 }
 
 impl fmt::Display for EVMError {
@@ -29,6 +30,9 @@ impl fmt::Display for EVMError {
             }
             EVMError::U256ToUSizeError(val, _) => {
                 write!(f, "cannot convert from U256 {:x?} to usize", val)
+            }
+            EVMError::U256ToU8Error(val, _) => {
+                write!(f, "cannot convert from U256 {:x?} to u8", val)
             }
         }
     }
@@ -59,6 +63,9 @@ impl fmt::Debug for EVMError {
                     "U256ToUSizeError\n    val: {:x}\n    ctx: {:#x?}",
                     val, ctx
                 )
+            }
+            EVMError::U256ToU8Error(val, ctx) => {
+                write!(f, "U256ToU8Error\n    val: {:x}\n    ctx: {:#x?}", val, ctx)
             }
         }
     }
