@@ -125,7 +125,7 @@ pub fn get_opcodes() -> Opcodes {
     //    opcodes.insert(0x1c, Box::new(opcodes::misc::shr));
     //    opcodes.insert(0x1d, Box::new(opcodes::misc::sar));
     //    opcodes.insert(0x1a, Box::new(opcodes::misc::byte));
-    //    opcodes.insert(0x20, Box::new(opcodes::misc::sha3));
+    opcodes.insert(0x20, Box::new(opcodes::sha_3::sha3));
     //
     //    opcodes.insert(0x30, Box::new(opcodes::transaction::address));
     //    opcodes.insert(0x31, Box::new(opcodes::state::balance));
