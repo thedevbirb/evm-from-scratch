@@ -3,7 +3,7 @@ use primitive_types::U256;
 use crate::evm::utils::{
     constants::BYTES_IN_U256_FROM_ZERO,
     errors::EVMError,
-    helpers::{hex_string_from_byte, pop_n},
+    helpers::{hex_string_from_byte, pop_n, update_active_words_memory},
     types::{ExecutionContext, OpcodeResult},
 };
 
@@ -22,13 +22,16 @@ pub fn pop(ctx: &mut ExecutionContext) -> OpcodeResult {
 pub fn mload(ctx: &mut ExecutionContext) -> OpcodeResult {
     let offset = pop_n(ctx, 1)?[0];
 
+
     let offset: usize = offset
         .try_into()
         .map_err(|_| EVMError::U256ToUSizeError(offset, ctx.clone()))?;
 
+    println!("{:x}", offset);
+
     let mut value_str = String::with_capacity(64);
 
-    for i in 0..32 {
+    for i in 0..=BYTES_IN_U256_FROM_ZERO {
         let location = i + offset;
         let byte = ctx.machine_state.memory.get(location).unwrap_or(&0);
         value_str.push_str(&hex_string_from_byte(*byte))
@@ -38,6 +41,10 @@ pub fn mload(ctx: &mut ExecutionContext) -> OpcodeResult {
         .map_err(|_| EVMError::FromStrRadixError(value_str, ctx.clone()))?;
 
     ctx.machine_state.stack.push(value);
+
+    println!("{:x}", offset + BYTES_IN_U256_FROM_ZERO);
+
+    update_active_words_memory(ctx, offset + BYTES_IN_U256_FROM_ZERO);
 
     Ok(())
 }
@@ -62,6 +69,8 @@ pub fn mstore(ctx: &mut ExecutionContext) -> OpcodeResult {
         }
     }
 
+    update_active_words_memory(ctx, offset + BYTES_IN_U256_FROM_ZERO);
+
     Ok(())
 }
 
@@ -79,21 +88,16 @@ pub fn mstore8(ctx: &mut ExecutionContext) -> OpcodeResult {
         .try_into()
         .map_err(|_| EVMError::U256ToU8Error(value, ctx.clone()))?;
 
-    for i in 0..=BYTES_IN_U256_FROM_ZERO {
-        if offset + i < ctx.machine_state.memory.len() {
-            if i == BYTES_IN_U256_FROM_ZERO {
-                ctx.machine_state.memory[offset + i] = value
-            }
-        } else {
-            ctx.machine_state
-                .memory
-                .push(if i == BYTES_IN_U256_FROM_ZERO {
-                    value
-                } else {
-                    0
-                });
-        }
-    }
+    ctx.machine_state.memory[offset] = value;
 
+    update_active_words_memory(ctx, offset);
+
+    Ok(())
+}
+
+/// 0x59
+pub fn msize(ctx: &mut ExecutionContext) -> OpcodeResult {
+    let msize = U256::from(ctx.machine_state.active_words_memory * 32);
+    ctx.machine_state.stack.push(msize);
     Ok(())
 }

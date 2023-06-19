@@ -56,7 +56,7 @@ pub struct MachineState {
     pub pc: usize,
     pub gas: U256,
     pub memory: Vec<u8>,
-    pub active_words_memory_idx: usize,
+    pub active_words_memory: usize,
     pub storage: HashMap<U256, U256>,
     pub stack: Vec<U256>,
 }
@@ -66,8 +66,8 @@ impl MachineState {
         MachineState {
             pc: 0,
             gas: U256::MAX,
-            memory: Vec::with_capacity(1024),
-            active_words_memory_idx: 0,
+            memory: vec![0; 256],
+            active_words_memory: 0,
             storage: HashMap::new(),
             stack: Vec::new(),
         }

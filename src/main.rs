@@ -73,13 +73,14 @@ fn main() -> Result<(), EVMError> {
 
             println!("Actual success: {:?}", result.output.success);
             println!("Actual stack: [");
-            for v in result.ctx.machine_state.stack {
+            for v in &result.ctx.machine_state.stack {
                 println!("  {:#X},", v);
             }
             println!("]\n");
 
             println!("\nHint: {}\n", test.hint);
             println!("Progress: {}/{}\n\n", index, total);
+            println!("Execution context: {:#x?}", result.ctx);
             panic!("Test failed");
         }
         println!("PASS");

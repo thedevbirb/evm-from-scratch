@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fmt::format};
+use std::collections::HashMap;
 
 use primitive_types::U256;
 
@@ -86,6 +86,15 @@ pub fn hex_string_from_byte(byte: u8) -> String {
     }
 }
 
+/// idx is in bytes
+pub fn update_active_words_memory(ctx: &mut ExecutionContext, last_accessed_memory_idx: usize) {
+    let last_accessed_word_idx = last_accessed_memory_idx / 32;
+    ctx.machine_state.active_words_memory = usize::max(
+        ctx.machine_state.active_words_memory,
+        last_accessed_word_idx + 1,
+    );
+}
+
 pub fn get_opcodes() -> Opcodes {
     let mut opcodes: Opcodes = HashMap::new();
 
@@ -153,7 +162,7 @@ pub fn get_opcodes() -> Opcodes {
     //    opcodes.insert(0x56, Box::new(opcodes::stack::jump));
     //    opcodes.insert(0x57, Box::new(opcodes::stack::jumpi));
     //    opcodes.insert(0x58, Box::new(opcodes::stack::pc));
-    //    opcodes.insert(0x59, Box::new(opcodes::memory::msize));
+    opcodes.insert(0x59, Box::new(opcodes::stack_memory_storage_flow::msize));
     //    opcodes.insert(0x5a, Box::new(opcodes::misc::gas));
     //    opcodes.insert(0x5b, Box::new(opcodes::stack::jumpdest));
     //
