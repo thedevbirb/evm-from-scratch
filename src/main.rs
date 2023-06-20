@@ -5,7 +5,7 @@ use evm_from_scratch_new::evm::{
     utils::{
         errors::EVMError,
         test_types::EvmTest,
-        types::{AccountState, ExecutionContext},
+        types::{AccountState, BlockHeader, ExecutionContext, Input},
     },
 };
 
@@ -28,29 +28,22 @@ fn main() -> Result<(), EVMError> {
         let code: Vec<u8> = hex::decode(&test.code.bin).unwrap();
 
         let mut ctx = ExecutionContext::new();
-        ctx.global_state = if let Some(gs) = &test.state {
-            gs.iter()
-                .map(|(k, v)| (k.clone(), AccountState::from(v)))
+        if let Some(gs) = &test.state {
+            ctx.global_state = gs
+                .iter()
+                .map(|(k, v)| (U256::from_str_radix(k, 16).unwrap(), AccountState::from(v)))
                 .collect()
-        } else {
-            HashMap::new()
         };
-        ctx.input.bytecode = code;
 
         if let Some(tx) = &test.tx {
-            if let Some(to) = &tx.to {
-                ctx.input.address = to.clone()
-            }
-            if let Some(from) = &tx.from {
-                ctx.input.sender = from.clone()
-            }
-            if let Some(origin) = &tx.origin {
-                ctx.input.origin = origin.clone()
-            }
-            if let Some(gasprice) = &tx.gasprice {
-                ctx.input.price = U256::from_str_radix(gasprice, 16).unwrap();
-            }
+            ctx.input = Input::from(tx);
         }
+
+        if let Some(block) = &test.block {
+            ctx.input.block_header = BlockHeader::from(block)
+        }
+
+        ctx.input.bytecode = code;
 
         let mut result = EVM::execute(ctx)?;
 

@@ -6,11 +6,11 @@ use crate::evm::opcodes;
 
 use super::{
     errors::EVMError,
-    types::{Address, ExecutionContext, GlobalState, Opcodes},
+    types::{ExecutionContext, GlobalState, Opcodes},
 };
 
 /// Models the EMPTY function in the yellow paper
-pub fn is_account_empty(state: GlobalState, address: Address) -> bool {
+pub fn is_account_empty(state: GlobalState, address: U256) -> bool {
     if let Some(account_state) = state.get(&address) {
         account_state.nonce == 0 && account_state.balance.is_zero()
     } else {
@@ -19,7 +19,7 @@ pub fn is_account_empty(state: GlobalState, address: Address) -> bool {
 }
 
 /// Models the DEAD function in the yellow paper
-pub fn is_account_dead(state: GlobalState, address: Address) -> bool {
+pub fn is_account_dead(state: GlobalState, address: U256) -> bool {
     state.get(&address).is_none() || is_account_empty(state, address)
 }
 

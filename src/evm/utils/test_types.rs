@@ -6,9 +6,10 @@ use serde::Deserialize;
 use super::{
     constants::KECCAK_EMPTY,
     helpers::bytes_from_hex_str,
-    types::{AccountState, Address},
+    types::{AccountState, BlockHeader, Input},
 };
 
+pub type Address = String;
 pub type State = HashMap<Address, TestAccountState>;
 
 #[derive(Debug, Deserialize)]
@@ -79,6 +80,27 @@ pub struct TxData {
     pub data: Option<String>,
 }
 
+impl From<&TxData> for Input {
+    fn from(value: &TxData) -> Self {
+        let mut input = Input::new_demo();
+
+        if let Some(to) = &value.to {
+            input.address = U256::from_str_radix(to, 16).unwrap();
+        }
+        if let Some(from) = &value.from {
+            input.sender = U256::from_str_radix(from, 16).unwrap();
+        }
+        if let Some(origin) = &value.origin {
+            input.origin = U256::from_str_radix(origin, 16).unwrap();
+        }
+        if let Some(gasprice) = &value.gasprice {
+            input.price = U256::from_str_radix(gasprice, 16).unwrap();
+        }
+
+        input
+    }
+}
+
 #[derive(Debug, Deserialize)]
 pub struct BlockData {
     pub basefee: Option<String>,
@@ -88,4 +110,26 @@ pub struct BlockData {
     pub gaslimit: Option<String>,
     pub difficulty: Option<String>,
     pub chainid: Option<String>,
+}
+
+impl From<&BlockData> for BlockHeader {
+    fn from(value: &BlockData) -> Self {
+        let mut block_header = BlockHeader::new();
+        if let Some(c) = &value.coinbase {
+            block_header.beneficiary = U256::from_str_radix(c, 16).unwrap();
+        }
+        if let Some(d) = &value.difficulty {
+            block_header.difficulty = U256::from_str_radix(d, 16).unwrap();
+        }
+        if let Some(n) = &value.number {
+            block_header.number = U256::from_str_radix(n, 16).unwrap();
+        }
+        if let Some(t) = &value.timestamp {
+            block_header.timestamp = U256::from_str_radix(t, 16).unwrap();
+        }
+        if let Some(l) = &value.gaslimit {
+            block_header.gas_limit = U256::from_str_radix(l, 16).unwrap();
+        }
+        block_header
+    }
 }
