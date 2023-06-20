@@ -81,20 +81,26 @@ pub struct TxData {
 }
 
 impl From<&TxData> for Input {
-    fn from(value: &TxData) -> Self {
+    fn from(tx: &TxData) -> Self {
         let mut input = Input::new_demo();
 
-        if let Some(to) = &value.to {
+        if let Some(to) = &tx.to {
             input.address = U256::from_str_radix(to, 16).unwrap();
         }
-        if let Some(from) = &value.from {
+        if let Some(from) = &tx.from {
             input.sender = U256::from_str_radix(from, 16).unwrap();
         }
-        if let Some(origin) = &value.origin {
+        if let Some(origin) = &tx.origin {
             input.origin = U256::from_str_radix(origin, 16).unwrap();
         }
-        if let Some(gasprice) = &value.gasprice {
+        if let Some(gasprice) = &tx.gasprice {
             input.price = U256::from_str_radix(gasprice, 16).unwrap();
+        }
+        if let Some(value) = &tx.value {
+            input.value = U256::from_str_radix(value, 16).unwrap();
+        }
+        if let Some(data) = &tx.data {
+            input.data = bytes_from_hex_str(data, false).unwrap();
         }
 
         input
@@ -129,6 +135,9 @@ impl From<&BlockData> for BlockHeader {
         }
         if let Some(l) = &value.gaslimit {
             block_header.gas_limit = U256::from_str_radix(l, 16).unwrap();
+        }
+        if let Some(f) = &value.basefee {
+            block_header.base_fee = U256::from_str_radix(f, 16).unwrap();
         }
         block_header
     }

@@ -27,8 +27,6 @@ pub fn mload(ctx: &mut ExecutionContext) -> OpcodeResult {
         .try_into()
         .map_err(|_| EVMError::U256ToUSizeError(offset, ctx.clone()))?;
 
-    println!("{:x}", offset);
-
     let mut value_str = String::with_capacity(64);
 
     for i in 0..=BYTES_IN_U256_FROM_ZERO {
@@ -41,8 +39,6 @@ pub fn mload(ctx: &mut ExecutionContext) -> OpcodeResult {
         .map_err(|_| EVMError::FromStrRadixError(value_str, ctx.clone()))?;
 
     ctx.machine_state.stack.push(value);
-
-    println!("{:x}", offset + BYTES_IN_U256_FROM_ZERO);
 
     update_active_words_memory(ctx, offset + BYTES_IN_U256_FROM_ZERO);
 

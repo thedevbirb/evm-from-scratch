@@ -88,7 +88,7 @@ fn main() -> Result<(), EVMError> {
 
             println!("\nHint: {}\n", test.hint);
             println!("Progress: {}/{}\n\n", index, total);
-            println!("Execution context: {:#x?}", result.ctx);
+            println!("Execution context: {:x?}", result.ctx);
             panic!("Test failed");
         }
         println!("PASS");

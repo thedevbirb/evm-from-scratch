@@ -128,13 +128,13 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0x20, Box::new(opcodes::sha_3::sha3));
     //
     opcodes.insert(0x30, Box::new(opcodes::environmental::address));
-    //    opcodes.insert(0x31, Box::new(opcodes::state::balance));
+    opcodes.insert(0x31, Box::new(opcodes::environmental::balance));
     opcodes.insert(0x32, Box::new(opcodes::environmental::origin));
     opcodes.insert(0x33, Box::new(opcodes::environmental::caller));
-    //    opcodes.insert(0x34, Box::new(opcodes::transaction::callvalue));
-    //    opcodes.insert(0x35, Box::new(opcodes::transaction::calldataload));
-    //    opcodes.insert(0x36, Box::new(opcodes::transaction::calldatasize));
-    //    opcodes.insert(0x37, Box::new(opcodes::transaction::calldatacopy));
+    opcodes.insert(0x34, Box::new(opcodes::environmental::callvalue));
+    opcodes.insert(0x35, Box::new(opcodes::environmental::calldataload));
+    opcodes.insert(0x36, Box::new(opcodes::environmental::calldatasize));
+    opcodes.insert(0x37, Box::new(opcodes::environmental::calldatacopy));
     //    opcodes.insert(0x38, Box::new(opcodes::misc::codesize));
     //    opcodes.insert(0x39, Box::new(opcodes::misc::codecopy));
     opcodes.insert(0x3a, Box::new(opcodes::environmental::gasprice));
@@ -142,15 +142,15 @@ pub fn get_opcodes() -> Opcodes {
     //    opcodes.insert(0x3c, Box::new(opcodes::environmental::extcodecopy));
     //    opcodes.insert(0x3f, Box::new(opcodes::environmental::extcodehash));
     //
-    //    opcodes.insert(0x40, Box::new(opcodes::block::blockhash));
-    //    opcodes.insert(0x41, Box::new(opcodes::block::coinbase));
-    //    opcodes.insert(0x42, Box::new(opcodes::block::timestamp));
-    //    opcodes.insert(0x43, Box::new(opcodes::block::number));
-    //    opcodes.insert(0x44, Box::new(opcodes::block::difficulty));
-    //    opcodes.insert(0x45, Box::new(opcodes::block::gaslimit));
-    //    opcodes.insert(0x46, Box::new(opcodes::block::chain));
+    opcodes.insert(0x40, Box::new(opcodes::block::blockhash));
+    opcodes.insert(0x41, Box::new(opcodes::block::coinbase));
+    opcodes.insert(0x42, Box::new(opcodes::block::timestamp));
+    opcodes.insert(0x43, Box::new(opcodes::block::number));
+    opcodes.insert(0x44, Box::new(opcodes::block::difficulty));
+    opcodes.insert(0x45, Box::new(opcodes::block::gaslimit));
+    opcodes.insert(0x46, Box::new(opcodes::block::chain));
     //    opcodes.insert(0x47, Box::new(opcodes::block::selfbalance));
-    //    opcodes.insert(0x48, Box::new(opcodes::block::basefee));
+    opcodes.insert(0x48, Box::new(opcodes::block::basefee));
     //
     //    // opcodes.insert(0x0b, Box::new(opcodes::sign_extend));
     opcodes.insert(0x50, Box::new(opcodes::stack_memory_storage_flow::pop));
