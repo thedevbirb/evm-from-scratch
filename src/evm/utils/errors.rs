@@ -42,30 +42,30 @@ impl fmt::Debug for EVMError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             EVMError::NoBytecodeError(ctx) => {
-                write!(f, "NoBytecodeError\n    ctx: {:#x?}", ctx)
+                write!(f, "NoBytecodeError\n    ctx: {:x?}", ctx)
             }
             EVMError::FromStrRadixError(str, ctx) => {
                 write!(
                     f,
-                    "FromStrRadixError\n    str: {},\n    ctx: {:#x?}",
+                    "FromStrRadixError\n    str: {},\n    ctx: {:x?}",
                     str, ctx
                 )
             }
             EVMError::NoOpcodeError(op, ctx) => {
-                write!(f, "NoOpcodeError\n    op: {:x},\n    ctx: {:#x?}", op, ctx)
+                write!(f, "NoOpcodeError\n    op: {:x},\n    ctx: {:x?}", op, ctx)
             }
             EVMError::EmptyStackError(ctx) => {
-                write!(f, "EmptyStackError\n    ctx: {:#x?}", ctx)
+                write!(f, "EmptyStackError\n    ctx: {:x?}", ctx)
             }
             EVMError::U256ToUSizeError(val, ctx) => {
                 write!(
                     f,
-                    "U256ToUSizeError\n    val: {:x}\n    ctx: {:#x?}",
+                    "U256ToUSizeError\n    val: {:x}\n    ctx: {:x?}",
                     val, ctx
                 )
             }
             EVMError::U256ToU8Error(val, ctx) => {
-                write!(f, "U256ToU8Error\n    val: {:x}\n    ctx: {:#x?}", val, ctx)
+                write!(f, "U256ToU8Error\n    val: {:x}\n    ctx: {:x?}", val, ctx)
             }
         }
     }

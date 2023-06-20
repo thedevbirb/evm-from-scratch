@@ -37,6 +37,21 @@ fn main() -> Result<(), EVMError> {
         };
         ctx.input.bytecode = code;
 
+        if let Some(tx) = &test.tx {
+            if let Some(to) = &tx.to {
+                ctx.input.address = to.clone()
+            }
+            if let Some(from) = &tx.from {
+                ctx.input.sender = from.clone()
+            }
+            if let Some(origin) = &tx.origin {
+                ctx.input.origin = origin.clone()
+            }
+            if let Some(gasprice) = &tx.gasprice {
+                ctx.input.price = U256::from_str_radix(gasprice, 16).unwrap();
+            }
+        }
+
         let mut result = EVM::execute(ctx)?;
 
         // Reverse the order of the stack for checking the tests

@@ -100,7 +100,7 @@ impl AccruedSubstate {
 #[derive(Debug, Clone)]
 pub struct Input {
     ///  the address of the account which owns the code that is executing
-    pub code_owner: Address,
+    pub address: Address,
 
     /// the sender address of the transaction that originated this execution
     pub origin: Address,
@@ -137,7 +137,7 @@ impl Input {
     /// Returns an Input instance with hardcoded demo data
     pub fn new_demo() -> Input {
         Input {
-            code_owner: String::from("0x8731d54E9D02c286767d56ac03e8037C07e01e98"),
+            address: String::from("0x8731d54E9D02c286767d56ac03e8037C07e01e98"),
             origin: String::from("0xc2e9A90a9B957c4687c5944491f86E29C10Cb439"),
             price: U256::zero(),
             data: Vec::new(),

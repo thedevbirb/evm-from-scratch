@@ -127,17 +127,17 @@ pub fn get_opcodes() -> Opcodes {
     //    opcodes.insert(0x1a, Box::new(opcodes::misc::byte));
     opcodes.insert(0x20, Box::new(opcodes::sha_3::sha3));
     //
-    //    opcodes.insert(0x30, Box::new(opcodes::transaction::address));
+    opcodes.insert(0x30, Box::new(opcodes::environmental::address));
     //    opcodes.insert(0x31, Box::new(opcodes::state::balance));
-    //    opcodes.insert(0x32, Box::new(opcodes::transaction::origin));
-    //    opcodes.insert(0x33, Box::new(opcodes::transaction::caller));
+    opcodes.insert(0x32, Box::new(opcodes::environmental::origin));
+    opcodes.insert(0x33, Box::new(opcodes::environmental::caller));
     //    opcodes.insert(0x34, Box::new(opcodes::transaction::callvalue));
     //    opcodes.insert(0x35, Box::new(opcodes::transaction::calldataload));
     //    opcodes.insert(0x36, Box::new(opcodes::transaction::calldatasize));
     //    opcodes.insert(0x37, Box::new(opcodes::transaction::calldatacopy));
     //    opcodes.insert(0x38, Box::new(opcodes::misc::codesize));
     //    opcodes.insert(0x39, Box::new(opcodes::misc::codecopy));
-    //    opcodes.insert(0x3a, Box::new(opcodes::transaction::gasprice));
+    opcodes.insert(0x3a, Box::new(opcodes::environmental::gasprice));
     //    opcodes.insert(0x3b, Box::new(opcodes::environmental::extcodesize));
     //    opcodes.insert(0x3c, Box::new(opcodes::environmental::extcodecopy));
     //    opcodes.insert(0x3f, Box::new(opcodes::environmental::extcodehash));
