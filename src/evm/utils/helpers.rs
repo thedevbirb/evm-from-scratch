@@ -135,12 +135,12 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0x35, Box::new(opcodes::environmental::calldataload));
     opcodes.insert(0x36, Box::new(opcodes::environmental::calldatasize));
     opcodes.insert(0x37, Box::new(opcodes::environmental::calldatacopy));
-    //    opcodes.insert(0x38, Box::new(opcodes::misc::codesize));
-    //    opcodes.insert(0x39, Box::new(opcodes::misc::codecopy));
+    opcodes.insert(0x38, Box::new(opcodes::environmental::codesize));
+    opcodes.insert(0x39, Box::new(opcodes::environmental::codecopy));
     opcodes.insert(0x3a, Box::new(opcodes::environmental::gasprice));
-    //    opcodes.insert(0x3b, Box::new(opcodes::environmental::extcodesize));
-    //    opcodes.insert(0x3c, Box::new(opcodes::environmental::extcodecopy));
-    //    opcodes.insert(0x3f, Box::new(opcodes::environmental::extcodehash));
+    opcodes.insert(0x3b, Box::new(opcodes::environmental::extcodesize));
+    opcodes.insert(0x3c, Box::new(opcodes::environmental::extcodecopy));
+    opcodes.insert(0x3f, Box::new(opcodes::environmental::extcodehash));
     //
     opcodes.insert(0x40, Box::new(opcodes::block::blockhash));
     opcodes.insert(0x41, Box::new(opcodes::block::coinbase));
