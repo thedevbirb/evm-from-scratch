@@ -92,6 +92,24 @@ pub fn mstore8(ctx: &mut ExecutionContext) -> OpcodeResult {
 
 /// 0x54
 pub fn sload(ctx: &mut ExecutionContext) -> OpcodeResult {
+    let key = pop_n(ctx, 1)?[0];
+
+    let address = ctx.input.address;
+    let value = if let Some(account_state) = ctx.global_state.get_mut(&address) {
+        account_state
+            .storage
+            .get(&key)
+            .unwrap_or(&U256::zero())
+            .clone()
+    } else {
+        U256::zero()
+    };
+
+    ctx.machine_state.stack.push(value);
+    ctx.accrued_substate
+        .accessed_storage_keys
+        .insert((address, key));
+
     Ok(())
 }
 
@@ -101,12 +119,18 @@ pub fn sstore(ctx: &mut ExecutionContext) -> OpcodeResult {
     let stack_items = pop_n(ctx, 2)?;
 
     let mut default_account_state = AccountState::new();
+    let key = stack_items[0];
+    let value = stack_items[1];
 
     ctx.global_state
         .get_mut(&address)
         .unwrap_or(&mut default_account_state)
         .storage
-        .insert(stack_items[0], stack_items[1]);
+        .insert(key, value);
+
+    ctx.accrued_substate
+        .accessed_storage_keys
+        .insert((address, key));
 
     Ok(())
 }

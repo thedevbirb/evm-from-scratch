@@ -2,7 +2,10 @@ use std::collections::{HashMap, HashSet};
 
 use primitive_types::U256;
 
-use super::{constants::KECCAK_EMPTY, errors::EVMError};
+use super::{
+    constants::{KECCAK_EMPTY, TEST_CONTRACT_ADDRESS, TEST_EOA_ADDRESS},
+    errors::EVMError,
+};
 
 #[derive(Debug, Clone)]
 pub struct ExecutionContext {
@@ -15,7 +18,7 @@ pub struct ExecutionContext {
 impl ExecutionContext {
     pub fn new() -> Self {
         Self {
-            global_state: GlobalState::new(),
+            global_state: get_demo_global_state(),
             machine_state: MachineState::new(),
             accrued_substate: AccruedSubstate::new(),
             input: Input::new_demo(),
@@ -47,6 +50,14 @@ impl AccountState {
 }
 
 pub type GlobalState = HashMap<U256, AccountState>;
+
+pub fn get_demo_global_state() -> GlobalState {
+    let mut gs = GlobalState::new();
+    gs.insert(TEST_CONTRACT_ADDRESS, AccountState::new());
+
+    gs
+}
+
 pub type Storage = HashMap<U256, U256>;
 
 #[derive(Debug, Clone)]
@@ -100,7 +111,7 @@ pub struct AccruedSubstate {
     /// the set of accessed storage keys
     /// (more accurately, each element of it is a tuple of a
     /// 20-byte account address and a 32-byte storage slot)
-    pub accessed_storage_keys: HashSet<(U256, U256)>
+    pub accessed_storage_keys: HashSet<(U256, U256)>,
 }
 
 impl AccruedSubstate {
@@ -111,7 +122,7 @@ impl AccruedSubstate {
             touched_accounts: HashSet::new(),
             refund_balance: U256::zero(),
             accessed_accounts: HashSet::new(),
-            accessed_storage_keys: HashSet::new()
+            accessed_storage_keys: HashSet::new(),
         }
     }
 }
@@ -161,12 +172,11 @@ impl Input {
     /// Returns an Input instance with hardcoded demo data
     pub fn new_demo() -> Input {
         Input {
-            address: U256::from_str_radix("0x8731d54E9D02c286767d56ac03e8037C07e01e98", 16)
-                .unwrap(),
-            origin: U256::from_str_radix("0xc2e9A90a9B957c4687c5944491f86E29C10Cb439", 16).unwrap(),
+            address: TEST_CONTRACT_ADDRESS,
+            origin: TEST_EOA_ADDRESS,
             price: U256::zero(),
             data: Vec::new(),
-            sender: U256::from_str_radix("0xc2e9A90a9B957c4687c5944491f86E29C10Cb439", 16).unwrap(),
+            sender: TEST_EOA_ADDRESS,
             value: U256::zero(),
             bytecode: Vec::new(),
             block_header: BlockHeader::new(),
