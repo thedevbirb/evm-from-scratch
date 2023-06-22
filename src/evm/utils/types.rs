@@ -236,9 +236,9 @@ pub type OpcodeResult<'a> = Result<(), EVMError>;
 
 #[derive(Debug, Clone)]
 pub struct Log {
-    address: U256,
-    data: String,
-    topics: Vec<String>,
+    pub address: U256,
+    pub data: Vec<u8>,
+    pub topics: Vec<U256>,
 }
 
 pub type Logs = Vec<Log>;

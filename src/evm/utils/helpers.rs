@@ -220,6 +220,12 @@ pub fn get_opcodes() -> Opcodes {
     //    opcodes.insert(0xf3, Box::new(opcodes::system::return_data));
     //    opcodes.insert(0xfe, Box::new(opcodes::misc::invalid));
     //    opcodes.insert(0xfd, Box::new(opcodes::system::revert));
+    //
+    opcodes.insert(0xa0, Box::new(opcodes::logging::log));
+    opcodes.insert(0xa1, Box::new(opcodes::logging::log));
+    opcodes.insert(0xa2, Box::new(opcodes::logging::log));
+    opcodes.insert(0xa3, Box::new(opcodes::logging::log));
+    opcodes.insert(0xa4, Box::new(opcodes::logging::log));
 
     opcodes
 }

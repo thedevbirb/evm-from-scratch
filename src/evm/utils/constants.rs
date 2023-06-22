@@ -3,6 +3,7 @@ use primitive_types::U256;
 pub const STOP: u8 = 0x00;
 pub const PUSH_0_HEX: u8 = 0x5f;
 pub const PUSH_1_HEX: u8 = 0x60;
+pub const LOG_0_HEX: u8 = 0xa0;
 
 pub const CHAIN_ID: u8 = 0x01;
 
