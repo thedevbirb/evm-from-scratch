@@ -1,7 +1,7 @@
 use crate::evm::utils::{
     constants::LOG_0_HEX,
     errors::EVMError,
-    helpers::pop_n,
+    helpers::{pop_n, update_active_words_memory},
     types::{ExecutionContext, Log, OpcodeResult},
 };
 
@@ -27,6 +27,8 @@ pub fn log(ctx: &mut ExecutionContext) -> OpcodeResult {
     for i in offset..offset + size {
         data.push(*ctx.machine_state.memory.get(i).unwrap_or(&0))
     }
+
+    update_active_words_memory(ctx, offset + size);
 
     ctx.accrued_substate.logs.push(Log {
         address: ctx.input.address,
