@@ -95,6 +95,17 @@ pub fn update_active_words_memory(ctx: &mut ExecutionContext, last_accessed_memo
     );
 }
 
+/// Returns a new U256 calculated as `val.mod(2^160)`
+pub fn modulo_address_size(val: &U256) -> U256 {
+    let address_max_size = U256::from(2).pow(U256::from(160));
+
+    if val.is_zero() {
+        U256::zero()
+    } else {
+        val.div_mod(address_max_size).1
+    }
+}
+
 pub fn get_opcodes() -> Opcodes {
     let mut opcodes: Opcodes = HashMap::new();
 
@@ -149,7 +160,7 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0x44, Box::new(opcodes::block::difficulty));
     opcodes.insert(0x45, Box::new(opcodes::block::gaslimit));
     opcodes.insert(0x46, Box::new(opcodes::block::chain));
-    //    opcodes.insert(0x47, Box::new(opcodes::block::selfbalance));
+    opcodes.insert(0x47, Box::new(opcodes::block::selfbalance));
     opcodes.insert(0x48, Box::new(opcodes::block::basefee));
     //
     //    // opcodes.insert(0x0b, Box::new(opcodes::sign_extend));
@@ -157,8 +168,8 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0x51, Box::new(opcodes::stack_memory_storage_flow::mload));
     opcodes.insert(0x52, Box::new(opcodes::stack_memory_storage_flow::mstore));
     opcodes.insert(0x53, Box::new(opcodes::stack_memory_storage_flow::mstore8));
-    //    opcodes.insert(0x54, Box::new(opcodes::storage::sload));
-    //    opcodes.insert(0x55, Box::new(opcodes::storage::sstore));
+    opcodes.insert(0x54, Box::new(opcodes::stack_memory_storage_flow::sload));
+    opcodes.insert(0x55, Box::new(opcodes::stack_memory_storage_flow::sstore));
     //    opcodes.insert(0x56, Box::new(opcodes::stack::jump));
     //    opcodes.insert(0x57, Box::new(opcodes::stack::jumpi));
     //    opcodes.insert(0x58, Box::new(opcodes::stack::pc));

@@ -74,12 +74,33 @@ impl MachineState {
 
 #[derive(Debug, Clone)]
 pub struct AccruedSubstate {
-    self_destruct_set: HashSet<U256>,
-    logs: Vec<Log>,
-    touched_accounts: HashSet<U256>,
-    refund_balance: U256,
-    accessed_account: HashSet<U256>,
-    accessed_storage_keys: HashMap<U256, U256>,
+    /// a set of accounts that will be discarded following
+    /// the transaction's completion
+    pub self_destruct_set: HashSet<U256>,
+
+    /// this is a series of archived and indexable 'checkpoints'
+    /// in VM code execution that allow for contract calls
+    /// to be easily tracked by onlookers external to the
+    /// Ethereum world (such as decentralised application front-ends)
+    pub logs: Vec<Log>,
+
+    /// the set of touched (modified) accounts, of which the empty ones
+    /// are deleted at the end of a transaction
+    pub touched_accounts: HashSet<U256>,
+
+    /// the refund balance, increased through using the `SSTORE` instruction
+    /// in order to reset contract storage to zero from some non-zero value.
+    /// Though not immediately refunded, it is allowed to partially
+    /// offset the total execution costs
+    pub refund_balance: U256,
+
+    /// the set of accessed account addresses
+    pub accessed_accounts: HashSet<U256>,
+
+    /// the set of accessed storage keys
+    /// (more accurately, each element of it is a tuple of a
+    /// 20-byte account address and a 32-byte storage slot)
+    pub accessed_storage_keys: HashSet<(U256, U256)>
 }
 
 impl AccruedSubstate {
@@ -89,8 +110,8 @@ impl AccruedSubstate {
             logs: Vec::new(),
             touched_accounts: HashSet::new(),
             refund_balance: U256::zero(),
-            accessed_account: HashSet::new(),
-            accessed_storage_keys: HashMap::new(),
+            accessed_accounts: HashSet::new(),
+            accessed_storage_keys: HashSet::new()
         }
     }
 }

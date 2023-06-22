@@ -3,7 +3,7 @@ use sha3::{Digest, Keccak256};
 
 use crate::evm::utils::{
     errors::EVMError,
-    helpers::{hex_string_from_bytes, pop_n, update_active_words_memory},
+    helpers::{hex_string_from_bytes, modulo_address_size, pop_n, update_active_words_memory},
     types::{ExecutionContext, OpcodeResult},
 };
 
@@ -15,7 +15,7 @@ pub fn address(ctx: &mut ExecutionContext) -> OpcodeResult {
 
 /// 0x31
 pub fn balance(ctx: &mut ExecutionContext) -> OpcodeResult {
-    let address = pop_n(ctx, 1)?[0];
+    let address = modulo_address_size(&pop_n(ctx, 1)?[0]);
     let balance = if let Some(account_state) = ctx.global_state.get(&address) {
         account_state.balance
     } else {
@@ -23,11 +23,12 @@ pub fn balance(ctx: &mut ExecutionContext) -> OpcodeResult {
     };
 
     ctx.machine_state.stack.push(balance);
+    ctx.accrued_substate.accessed_accounts.insert(address);
 
     Ok(())
 }
 
-/// 0x32
+/// 0x32 TODO: add a check that origin has always empty code
 pub fn origin(ctx: &mut ExecutionContext) -> OpcodeResult {
     ctx.machine_state.stack.push(ctx.input.origin);
 
@@ -147,7 +148,7 @@ pub fn gasprice(ctx: &mut ExecutionContext) -> OpcodeResult {
 
 /// 0x3b
 pub fn extcodesize(ctx: &mut ExecutionContext) -> OpcodeResult {
-    let address = pop_n(ctx, 1)?[0];
+    let address = modulo_address_size(&pop_n(ctx, 1)?[0]);
 
     let size = if let Some(account_state) = ctx.global_state.get(&address) {
         U256::from(account_state.code.len())
@@ -156,6 +157,7 @@ pub fn extcodesize(ctx: &mut ExecutionContext) -> OpcodeResult {
     };
 
     ctx.machine_state.stack.push(size);
+    ctx.accrued_substate.accessed_accounts.insert(address);
 
     Ok(())
 }
@@ -164,7 +166,7 @@ pub fn extcodesize(ctx: &mut ExecutionContext) -> OpcodeResult {
 pub fn extcodecopy(ctx: &mut ExecutionContext) -> OpcodeResult {
     let stack_items = pop_n(ctx, 4)?;
 
-    let address = stack_items[0];
+    let address = modulo_address_size(&stack_items[0]);
     let dest_offset: usize = stack_items[1]
         .try_into()
         .map_err(|_| EVMError::U256ToUSizeError(stack_items[1], ctx.clone()))?;
@@ -191,13 +193,14 @@ pub fn extcodecopy(ctx: &mut ExecutionContext) -> OpcodeResult {
         });
 
     update_active_words_memory(ctx, offset + size);
+    ctx.accrued_substate.accessed_accounts.insert(address);
 
     Ok(())
 }
 
 /// 0x3f
 pub fn extcodehash(ctx: &mut ExecutionContext) -> OpcodeResult {
-    let address = pop_n(ctx, 1)?[0];
+    let address = modulo_address_size(&pop_n(ctx, 1)?[0]);
 
     if let Some(account_state) = ctx.global_state.get(&address) {
         let mut hasher = Keccak256::new();
@@ -211,6 +214,8 @@ pub fn extcodehash(ctx: &mut ExecutionContext) -> OpcodeResult {
     } else {
         ctx.machine_state.stack.push(U256::zero())
     }
+
+    ctx.accrued_substate.accessed_accounts.insert(address);
 
     Ok(())
 }

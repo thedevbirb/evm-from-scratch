@@ -59,6 +59,20 @@ pub fn chain(ctx: &mut ExecutionContext) -> OpcodeResult {
     Ok(())
 }
 
+/// 0x47
+pub fn selfbalance(ctx: &mut ExecutionContext) -> OpcodeResult {
+    let to = ctx.input.address;
+    let balance = if let Some(account_state) = ctx.global_state.get(&to) {
+        account_state.balance.clone()
+    } else {
+        U256::zero()
+    };
+
+    ctx.machine_state.stack.push(balance);
+
+    Ok(())
+}
+
 /// 0x48
 pub fn basefee(ctx: &mut ExecutionContext) -> OpcodeResult {
     let base_fee = ctx.input.block_header.base_fee;

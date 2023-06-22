@@ -4,7 +4,7 @@ use crate::evm::utils::{
     constants::BYTES_IN_U256_FROM_ZERO,
     errors::EVMError,
     helpers::{hex_string_from_byte, pop_n, update_active_words_memory},
-    types::{ExecutionContext, OpcodeResult},
+    types::{AccountState, ExecutionContext, OpcodeResult},
 };
 
 /// 0x50
@@ -21,7 +21,6 @@ pub fn pop(ctx: &mut ExecutionContext) -> OpcodeResult {
 /// 0x51
 pub fn mload(ctx: &mut ExecutionContext) -> OpcodeResult {
     let offset = pop_n(ctx, 1)?[0];
-
 
     let offset: usize = offset
         .try_into()
@@ -87,6 +86,27 @@ pub fn mstore8(ctx: &mut ExecutionContext) -> OpcodeResult {
     ctx.machine_state.memory[offset] = value;
 
     update_active_words_memory(ctx, offset);
+
+    Ok(())
+}
+
+/// 0x54
+pub fn sload(ctx: &mut ExecutionContext) -> OpcodeResult {
+    Ok(())
+}
+
+/// 0x55
+pub fn sstore(ctx: &mut ExecutionContext) -> OpcodeResult {
+    let address = ctx.input.address;
+    let stack_items = pop_n(ctx, 2)?;
+
+    let mut default_account_state = AccountState::new();
+
+    ctx.global_state
+        .get_mut(&address)
+        .unwrap_or(&mut default_account_state)
+        .storage
+        .insert(stack_items[0], stack_items[1]);
 
     Ok(())
 }
