@@ -198,10 +198,32 @@ pub fn extcodecopy(ctx: &mut ExecutionContext) -> OpcodeResult {
     Ok(None)
 }
 
-/// 0c3d
+/// 0x3d
 pub fn returndatasize(ctx: &mut ExecutionContext) -> OpcodeResult {
     let return_data_size = U256::from(ctx.machine_state.output.len());
     ctx.machine_state.stack.push(return_data_size);
+    Ok(None)
+}
+
+/// 0x3e
+pub fn returndatacopy(ctx: &mut ExecutionContext) -> OpcodeResult {
+    let stack_items = pop_n(ctx, 3)?;
+    let dest_offset: usize = stack_items[0]
+        .try_into()
+        .map_err(|_| EVMError::U256ToUSizeError(stack_items[0], ctx.clone()))?;
+    let offset: usize = stack_items[1]
+        .try_into()
+        .map_err(|_| EVMError::U256ToUSizeError(stack_items[1], ctx.clone()))?;
+    let size: usize = stack_items[2]
+        .try_into()
+        .map_err(|_| EVMError::U256ToUSizeError(stack_items[2], ctx.clone()))?;
+
+    for i in offset..offset + size {
+        ctx.machine_state.memory[dest_offset + i] = *ctx.machine_state.output.get(i).unwrap_or(&0);
+    }
+
+    update_active_words_memory(ctx, dest_offset + size);
+
     Ok(None)
 }
 

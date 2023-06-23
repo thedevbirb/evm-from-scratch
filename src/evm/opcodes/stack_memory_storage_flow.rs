@@ -141,3 +141,9 @@ pub fn msize(ctx: &mut ExecutionContext) -> OpcodeResult {
     ctx.machine_state.stack.push(msize);
     Ok(None)
 }
+
+/// 0x5a not implemented
+pub fn gas(ctx: &mut ExecutionContext) -> OpcodeResult {
+    ctx.machine_state.stack.push(U256::MAX);
+    Ok(None)
+}

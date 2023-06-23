@@ -152,6 +152,7 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0x3b, Box::new(opcodes::environmental::extcodesize));
     opcodes.insert(0x3c, Box::new(opcodes::environmental::extcodecopy));
     opcodes.insert(0x3d, Box::new(opcodes::environmental::returndatasize));
+    opcodes.insert(0x3e, Box::new(opcodes::environmental::returndatacopy));
     opcodes.insert(0x3f, Box::new(opcodes::environmental::extcodehash));
     //
     opcodes.insert(0x40, Box::new(opcodes::block::blockhash));
@@ -175,6 +176,7 @@ pub fn get_opcodes() -> Opcodes {
     //    opcodes.insert(0x57, Box::new(opcodes::stack::jumpi));
     //    opcodes.insert(0x58, Box::new(opcodes::stack::pc));
     opcodes.insert(0x59, Box::new(opcodes::stack_memory_storage_flow::msize));
+    opcodes.insert(0x5a, Box::new(opcodes::stack_memory_storage_flow::gas));
     //    opcodes.insert(0x5a, Box::new(opcodes::misc::gas));
     //    opcodes.insert(0x5b, Box::new(opcodes::stack::jumpdest));
     //
@@ -212,10 +214,23 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0x7d, Box::new(opcodes::push::push));
     opcodes.insert(0x7e, Box::new(opcodes::push::push));
     opcodes.insert(0x7f, Box::new(opcodes::push::push));
-    //    insert_push_n_functions(&mut opcodes);
-    //    insert_dup_n_functions(&mut opcodes);
-    //    insert_swap_n_functions(&mut opcodes);
-    //    insert_log_n_function(&mut opcodes);
+    //
+    opcodes.insert(0x80, Box::new(opcodes::duplication::dup));
+    opcodes.insert(0x81, Box::new(opcodes::duplication::dup));
+    opcodes.insert(0x82, Box::new(opcodes::duplication::dup));
+    opcodes.insert(0x83, Box::new(opcodes::duplication::dup));
+    opcodes.insert(0x84, Box::new(opcodes::duplication::dup));
+    opcodes.insert(0x85, Box::new(opcodes::duplication::dup));
+    opcodes.insert(0x86, Box::new(opcodes::duplication::dup));
+    opcodes.insert(0x87, Box::new(opcodes::duplication::dup));
+    opcodes.insert(0x88, Box::new(opcodes::duplication::dup));
+    opcodes.insert(0x89, Box::new(opcodes::duplication::dup));
+    opcodes.insert(0x8a, Box::new(opcodes::duplication::dup));
+    opcodes.insert(0x8b, Box::new(opcodes::duplication::dup));
+    opcodes.insert(0x8c, Box::new(opcodes::duplication::dup));
+    opcodes.insert(0x8d, Box::new(opcodes::duplication::dup));
+    opcodes.insert(0x8e, Box::new(opcodes::duplication::dup));
+    opcodes.insert(0x8f, Box::new(opcodes::duplication::dup));
     //
     opcodes.insert(0xf1, Box::new(opcodes::system::call));
     opcodes.insert(0xf3, Box::new(opcodes::system::r#return));
