@@ -225,6 +225,7 @@ impl BlockHeader {
 
 pub struct Output {
     pub success: bool,
+    pub return_data: Option<Vec<u8>>,
 }
 
 pub struct EVMReturnData {
@@ -232,7 +233,7 @@ pub struct EVMReturnData {
     pub output: Output,
 }
 
-pub type OpcodeResult<'a> = Result<(), EVMError>;
+pub type OpcodeResult<'a> = Result<Option<Vec<u8>>, EVMError>;
 
 #[derive(Debug, Clone)]
 pub struct Log {

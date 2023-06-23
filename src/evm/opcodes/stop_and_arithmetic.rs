@@ -7,7 +7,7 @@ use crate::evm::utils::{
 
 // 0x00
 pub fn stop(_ctx: &mut ExecutionContext) -> OpcodeResult {
-    Ok(())
+    Ok(None)
 }
 
 // 0x01
@@ -18,7 +18,7 @@ pub fn add(ctx: &mut ExecutionContext) -> OpcodeResult {
 
     ctx.machine_state.stack.push(result);
 
-    Ok(())
+    Ok(None)
 }
 
 // 0x02
@@ -29,7 +29,7 @@ pub fn mul(ctx: &mut ExecutionContext) -> OpcodeResult {
 
     ctx.machine_state.stack.push(result);
 
-    Ok(())
+    Ok(None)
 }
 
 // 0x03
@@ -40,5 +40,5 @@ pub fn sub(ctx: &mut ExecutionContext) -> OpcodeResult {
 
     ctx.machine_state.stack.push(result);
 
-    Ok(())
+    Ok(None)
 }

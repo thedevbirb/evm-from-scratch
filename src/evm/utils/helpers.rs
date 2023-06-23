@@ -217,9 +217,9 @@ pub fn get_opcodes() -> Opcodes {
     //    insert_log_n_function(&mut opcodes);
     //
     //    opcodes.insert(0xf1, Box::new(opcodes::system::return_data));
-    //    opcodes.insert(0xf3, Box::new(opcodes::system::return_data));
+    opcodes.insert(0xf3, Box::new(opcodes::system::r#return));
     //    opcodes.insert(0xfe, Box::new(opcodes::misc::invalid));
-    //    opcodes.insert(0xfd, Box::new(opcodes::system::revert));
+    opcodes.insert(0xfd, Box::new(opcodes::system::revert));
     //
     opcodes.insert(0xa0, Box::new(opcodes::logging::log));
     opcodes.insert(0xa1, Box::new(opcodes::logging::log));

@@ -14,49 +14,49 @@ use crate::evm::utils::{
 pub fn blockhash(ctx: &mut ExecutionContext) -> OpcodeResult {
     let _block_number = pop_n(ctx, 1)?[0];
     ctx.machine_state.stack.push(U256::zero());
-    Ok(())
+    Ok(None)
 }
 
 /// 0x41
 pub fn coinbase(ctx: &mut ExecutionContext) -> OpcodeResult {
     let beneficiary = ctx.input.block_header.beneficiary;
     ctx.machine_state.stack.push(beneficiary);
-    Ok(())
+    Ok(None)
 }
 
 /// 0x42
 pub fn timestamp(ctx: &mut ExecutionContext) -> OpcodeResult {
     let timestamp = ctx.input.block_header.timestamp;
     ctx.machine_state.stack.push(timestamp);
-    Ok(())
+    Ok(None)
 }
 
 /// 0x43
 pub fn number(ctx: &mut ExecutionContext) -> OpcodeResult {
     let number = ctx.input.block_header.number;
     ctx.machine_state.stack.push(number);
-    Ok(())
+    Ok(None)
 }
 
 /// 0x44
 pub fn difficulty(ctx: &mut ExecutionContext) -> OpcodeResult {
     let difficulty = ctx.input.block_header.difficulty;
     ctx.machine_state.stack.push(difficulty);
-    Ok(())
+    Ok(None)
 }
 
 /// 0x45
 pub fn gaslimit(ctx: &mut ExecutionContext) -> OpcodeResult {
     let gas_limit = ctx.input.block_header.gas_limit;
     ctx.machine_state.stack.push(gas_limit);
-    Ok(())
+    Ok(None)
 }
 
 /// 0x46
 pub fn chain(ctx: &mut ExecutionContext) -> OpcodeResult {
     let chain_id = U256::from(CHAIN_ID);
     ctx.machine_state.stack.push(chain_id);
-    Ok(())
+    Ok(None)
 }
 
 /// 0x47
@@ -70,12 +70,12 @@ pub fn selfbalance(ctx: &mut ExecutionContext) -> OpcodeResult {
 
     ctx.machine_state.stack.push(balance);
 
-    Ok(())
+    Ok(None)
 }
 
 /// 0x48
 pub fn basefee(ctx: &mut ExecutionContext) -> OpcodeResult {
     let base_fee = ctx.input.block_header.base_fee;
     ctx.machine_state.stack.push(base_fee);
-    Ok(())
+    Ok(None)
 }

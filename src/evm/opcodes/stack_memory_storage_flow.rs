@@ -15,7 +15,7 @@ pub fn pop(ctx: &mut ExecutionContext) -> OpcodeResult {
         .pop()
         .ok_or(EVMError::EmptyStackError(ctx.clone()));
 
-    Ok(())
+    Ok(None)
 }
 
 /// 0x51
@@ -41,7 +41,7 @@ pub fn mload(ctx: &mut ExecutionContext) -> OpcodeResult {
 
     update_active_words_memory(ctx, offset + BYTES_IN_U256_FROM_ZERO);
 
-    Ok(())
+    Ok(None)
 }
 
 /// 0x52
@@ -66,7 +66,7 @@ pub fn mstore(ctx: &mut ExecutionContext) -> OpcodeResult {
 
     update_active_words_memory(ctx, offset + BYTES_IN_U256_FROM_ZERO);
 
-    Ok(())
+    Ok(None)
 }
 
 /// 0x53
@@ -87,7 +87,7 @@ pub fn mstore8(ctx: &mut ExecutionContext) -> OpcodeResult {
 
     update_active_words_memory(ctx, offset);
 
-    Ok(())
+    Ok(None)
 }
 
 /// 0x54
@@ -110,7 +110,7 @@ pub fn sload(ctx: &mut ExecutionContext) -> OpcodeResult {
         .accessed_storage_keys
         .insert((address, key));
 
-    Ok(())
+    Ok(None)
 }
 
 /// 0x55
@@ -132,12 +132,12 @@ pub fn sstore(ctx: &mut ExecutionContext) -> OpcodeResult {
         .accessed_storage_keys
         .insert((address, key));
 
-    Ok(())
+    Ok(None)
 }
 
 /// 0x59
 pub fn msize(ctx: &mut ExecutionContext) -> OpcodeResult {
     let msize = U256::from(ctx.machine_state.active_words_memory * 32);
     ctx.machine_state.stack.push(msize);
-    Ok(())
+    Ok(None)
 }

@@ -10,7 +10,7 @@ use crate::evm::utils::{
 /// 0x30
 pub fn address(ctx: &mut ExecutionContext) -> OpcodeResult {
     ctx.machine_state.stack.push(ctx.input.address);
-    Ok(())
+    Ok(None)
 }
 
 /// 0x31
@@ -25,27 +25,27 @@ pub fn balance(ctx: &mut ExecutionContext) -> OpcodeResult {
     ctx.machine_state.stack.push(balance);
     ctx.accrued_substate.accessed_accounts.insert(address);
 
-    Ok(())
+    Ok(None)
 }
 
 /// 0x32 TODO: add a check that origin has always empty code
 pub fn origin(ctx: &mut ExecutionContext) -> OpcodeResult {
     ctx.machine_state.stack.push(ctx.input.origin);
 
-    Ok(())
+    Ok(None)
 }
 
 /// 0x33 Solidity calls this msg.sender
 pub fn caller(ctx: &mut ExecutionContext) -> OpcodeResult {
     ctx.machine_state.stack.push(ctx.input.sender);
 
-    Ok(())
+    Ok(None)
 }
 
 /// 0x34 Solidity calls this msg.value
 pub fn callvalue(ctx: &mut ExecutionContext) -> OpcodeResult {
     ctx.machine_state.stack.push(ctx.input.value);
-    Ok(())
+    Ok(None)
 }
 
 /// 0x35
@@ -67,7 +67,7 @@ pub fn calldataload(ctx: &mut ExecutionContext) -> OpcodeResult {
 
     ctx.machine_state.stack.push(data);
 
-    Ok(())
+    Ok(None)
 }
 
 /// 0x36
@@ -76,7 +76,7 @@ pub fn calldatasize(ctx: &mut ExecutionContext) -> OpcodeResult {
 
     ctx.machine_state.stack.push(size);
 
-    Ok(())
+    Ok(None)
 }
 
 /// 0x37
@@ -103,14 +103,14 @@ pub fn calldatacopy(ctx: &mut ExecutionContext) -> OpcodeResult {
 
     update_active_words_memory(ctx, offset + size);
 
-    Ok(())
+    Ok(None)
 }
 
 /// 0x38
 pub fn codesize(ctx: &mut ExecutionContext) -> OpcodeResult {
     let size = U256::from(ctx.input.bytecode.len());
     ctx.machine_state.stack.push(size);
-    Ok(())
+    Ok(None)
 }
 
 /// 0x39
@@ -137,13 +137,13 @@ pub fn codecopy(ctx: &mut ExecutionContext) -> OpcodeResult {
 
     update_active_words_memory(ctx, offset + size);
 
-    Ok(())
+    Ok(None)
 }
 
 /// 0x3a
 pub fn gasprice(ctx: &mut ExecutionContext) -> OpcodeResult {
     ctx.machine_state.stack.push(ctx.input.price);
-    Ok(())
+    Ok(None)
 }
 
 /// 0x3b
@@ -159,7 +159,7 @@ pub fn extcodesize(ctx: &mut ExecutionContext) -> OpcodeResult {
     ctx.machine_state.stack.push(size);
     ctx.accrued_substate.accessed_accounts.insert(address);
 
-    Ok(())
+    Ok(None)
 }
 
 /// 0x39
@@ -195,7 +195,7 @@ pub fn extcodecopy(ctx: &mut ExecutionContext) -> OpcodeResult {
     update_active_words_memory(ctx, offset + size);
     ctx.accrued_substate.accessed_accounts.insert(address);
 
-    Ok(())
+    Ok(None)
 }
 
 /// 0x3f
@@ -217,5 +217,5 @@ pub fn extcodehash(ctx: &mut ExecutionContext) -> OpcodeResult {
 
     ctx.accrued_substate.accessed_accounts.insert(address);
 
-    Ok(())
+    Ok(None)
 }

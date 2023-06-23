@@ -1,7 +1,7 @@
 use primitive_types::U256;
 
 use crate::evm::utils::{
-    constants::{PUSH_0_HEX, PUSH_1_HEX},
+    constants::{PUSH_0, PUSH_1},
     errors::EVMError,
     helpers::hex_string_from_bytes,
     types::{ExecutionContext, OpcodeResult},
@@ -16,12 +16,12 @@ pub fn push(ctx: &mut ExecutionContext) -> OpcodeResult {
         .ok_or(EVMError::NoBytecodeError(ctx.clone()))?
         .clone();
 
-    if opcode == PUSH_0_HEX {
+    if opcode == PUSH_0 {
         ctx.machine_state.stack.push(U256::zero());
-        return Ok(());
+        return Ok(None);
     }
 
-    let offset: usize = (opcode - PUSH_1_HEX + 1).into();
+    let offset: usize = (opcode - PUSH_1 + 1).into();
     let data_position_hex: usize = pc + 1;
 
     let data = bytecode
@@ -37,5 +37,5 @@ pub fn push(ctx: &mut ExecutionContext) -> OpcodeResult {
 
     ctx.machine_state.stack.push(data);
 
-    Ok(())
+    Ok(None)
 }

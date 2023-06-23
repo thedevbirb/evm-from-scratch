@@ -1,5 +1,5 @@
 use crate::evm::utils::{
-    constants::LOG_0_HEX,
+    constants::LOG_0,
     errors::EVMError,
     helpers::{pop_n, update_active_words_memory},
     types::{ExecutionContext, Log, OpcodeResult},
@@ -13,7 +13,7 @@ pub fn log(ctx: &mut ExecutionContext) -> OpcodeResult {
         .get(ctx.machine_state.pc)
         .ok_or(EVMError::NoBytecodeError(ctx.clone()))?;
 
-    let n = opcode - LOG_0_HEX;
+    let n = opcode - LOG_0;
 
     let stack_items = pop_n(ctx, 2 + usize::from(n))?;
     let offset: usize = stack_items[0]
@@ -40,5 +40,5 @@ pub fn log(ctx: &mut ExecutionContext) -> OpcodeResult {
         },
     });
 
-    Ok(())
+    Ok(None)
 }

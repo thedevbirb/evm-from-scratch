@@ -30,5 +30,5 @@ pub fn sha3(ctx: &mut ExecutionContext) -> OpcodeResult {
 
     update_active_words_memory(ctx, ending_offset);
 
-    Ok(())
+    Ok(None)
 }
