@@ -198,6 +198,13 @@ pub fn extcodecopy(ctx: &mut ExecutionContext) -> OpcodeResult {
     Ok(None)
 }
 
+/// 0c3d
+pub fn returndatasize(ctx: &mut ExecutionContext) -> OpcodeResult {
+    let return_data_size = U256::from(ctx.machine_state.output.len());
+    ctx.machine_state.stack.push(return_data_size);
+    Ok(None)
+}
+
 /// 0x3f
 pub fn extcodehash(ctx: &mut ExecutionContext) -> OpcodeResult {
     let address = modulo_address_size(&pop_n(ctx, 1)?[0]);

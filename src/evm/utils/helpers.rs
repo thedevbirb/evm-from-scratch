@@ -151,6 +151,7 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0x3a, Box::new(opcodes::environmental::gasprice));
     opcodes.insert(0x3b, Box::new(opcodes::environmental::extcodesize));
     opcodes.insert(0x3c, Box::new(opcodes::environmental::extcodecopy));
+    opcodes.insert(0x3d, Box::new(opcodes::environmental::returndatasize));
     opcodes.insert(0x3f, Box::new(opcodes::environmental::extcodehash));
     //
     opcodes.insert(0x40, Box::new(opcodes::block::blockhash));
@@ -216,7 +217,7 @@ pub fn get_opcodes() -> Opcodes {
     //    insert_swap_n_functions(&mut opcodes);
     //    insert_log_n_function(&mut opcodes);
     //
-    //    opcodes.insert(0xf1, Box::new(opcodes::system::return_data));
+    opcodes.insert(0xf1, Box::new(opcodes::system::call));
     opcodes.insert(0xf3, Box::new(opcodes::system::r#return));
     //    opcodes.insert(0xfe, Box::new(opcodes::misc::invalid));
     opcodes.insert(0xfd, Box::new(opcodes::system::revert));

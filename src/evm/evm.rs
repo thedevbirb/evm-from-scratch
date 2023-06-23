@@ -1,5 +1,4 @@
 use crate::evm::utils::constants::REVERT;
-use crate::evm::utils::types::Output;
 
 use super::utils::constants::STOP;
 use super::utils::types::EVMReturnData;
@@ -8,9 +7,9 @@ use super::utils::{errors::EVMError, helpers::get_opcodes, types::ExecutionConte
 pub struct EVM {}
 
 impl EVM {
-    pub fn execute(mut ctx: ExecutionContext) -> Result<EVMReturnData, EVMError> {
+    pub fn execute(ctx: &mut ExecutionContext) -> Result<EVMReturnData, EVMError> {
         let opcodes = get_opcodes();
-        let mut return_data = None;
+        let mut output = None;
         let mut reverted = false;
 
         while ctx.machine_state.pc < ctx.input.bytecode.len() {
@@ -30,21 +29,18 @@ impl EVM {
                 .get(opcode)
                 .ok_or(EVMError::NoOpcodeError(*opcode, ctx.clone()))?;
 
-            return_data = runner(&mut ctx)?;
+            output = runner(ctx)?;
 
             ctx.machine_state.pc += 1;
 
-            if let Some(_data) = &return_data {
+            if let Some(_data) = &output {
                 break;
             }
         }
 
         Ok(EVMReturnData {
-            ctx,
-            output: Output {
-                success: !reverted,
-                return_data,
-            },
+            success: !reverted,
+            output,
         })
     }
 }

@@ -66,8 +66,11 @@ pub struct MachineState {
     pub gas: U256,
     pub memory: Vec<u8>,
     pub active_words_memory: usize,
-    pub storage: HashMap<U256, U256>,
     pub stack: Vec<U256>,
+
+    /// Output data from the previous call from the current environment.
+    /// On the yellow paper is formally denoted as $\mu_o$.
+    pub output: Vec<u8>,
 }
 
 impl MachineState {
@@ -77,8 +80,8 @@ impl MachineState {
             gas: U256::MAX,
             memory: vec![0; 256],
             active_words_memory: 0,
-            storage: HashMap::new(),
             stack: Vec::new(),
+            output: Vec::new(),
         }
     }
 }
@@ -223,14 +226,10 @@ impl BlockHeader {
     }
 }
 
-pub struct Output {
-    pub success: bool,
-    pub return_data: Option<Vec<u8>>,
-}
-
+#[derive(Debug)]
 pub struct EVMReturnData {
-    pub ctx: ExecutionContext,
-    pub output: Output,
+    pub success: bool,
+    pub output: Option<Vec<u8>>,
 }
 
 pub type OpcodeResult<'a> = Result<Option<Vec<u8>>, EVMError>;

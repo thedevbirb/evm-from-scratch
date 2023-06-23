@@ -45,10 +45,10 @@ fn main() -> Result<(), EVMError> {
 
         ctx.input.bytecode = code;
 
-        let mut result = EVM::execute(ctx)?;
+        let result = EVM::execute(&mut ctx)?;
 
         // Reverse the order of the stack for checking the tests
-        result.ctx.machine_state.stack.reverse();
+        ctx.machine_state.stack.reverse();
 
         let mut expected_stack: Vec<U256> = Vec::new();
         if let Some(ref stacks) = test.expect.stack {
@@ -57,17 +57,17 @@ fn main() -> Result<(), EVMError> {
             }
         }
 
-        let mut matching = result.ctx.machine_state.stack.len() == expected_stack.len();
+        let mut matching = ctx.machine_state.stack.len() == expected_stack.len();
         if matching {
-            for i in 0..result.ctx.machine_state.stack.len() {
-                if result.ctx.machine_state.stack[i] != expected_stack[i] {
+            for i in 0..ctx.machine_state.stack.len() {
+                if ctx.machine_state.stack[i] != expected_stack[i] {
                     matching = false;
                     break;
                 }
             }
         }
 
-        matching = matching && result.output.success == test.expect.success;
+        matching = matching && result.success == test.expect.success;
 
         if !matching {
             println!("Instructions: \n{}\n", test.code.asm);
@@ -79,16 +79,16 @@ fn main() -> Result<(), EVMError> {
             }
             println!("]\n");
 
-            println!("Actual success: {:?}", result.output.success);
+            println!("Actual success: {:?}", result.success);
             println!("Actual stack: [");
-            for v in &result.ctx.machine_state.stack {
+            for v in &ctx.machine_state.stack {
                 println!("  {:#X},", v);
             }
             println!("]\n");
 
             println!("\nHint: {}\n", test.hint);
             println!("Progress: {}/{}\n\n", index, total);
-            println!("Execution context: {:x?}", result.ctx);
+            println!("Execution context: {:x?}", ctx);
             panic!("Test failed");
         }
         println!("PASS");
