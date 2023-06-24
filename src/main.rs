@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use evm_from_scratch_new::evm::{
     evm::EVM,
     utils::{

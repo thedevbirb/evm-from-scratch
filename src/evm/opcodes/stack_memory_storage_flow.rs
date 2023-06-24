@@ -118,15 +118,16 @@ pub fn sstore(ctx: &mut ExecutionContext) -> OpcodeResult {
     let address = ctx.input.address;
     let stack_items = pop_n(ctx, 2)?;
 
-    let mut default_account_state = AccountState::new();
     let key = stack_items[0];
     let value = stack_items[1];
 
-    ctx.global_state
-        .get_mut(&address)
-        .unwrap_or(&mut default_account_state)
-        .storage
-        .insert(key, value);
+    if let Some(account_state) = ctx.global_state.get_mut(&address) {
+        account_state.storage.insert(key, value);
+    } else {
+        let mut account_state = AccountState::new();
+        account_state.storage.insert(key, value);
+        ctx.global_state.insert(address, account_state);
+    };
 
     ctx.accrued_substate
         .accessed_storage_keys

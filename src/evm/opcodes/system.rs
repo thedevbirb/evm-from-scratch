@@ -111,7 +111,6 @@ pub fn r#return(ctx: &mut ExecutionContext) -> OpcodeResult {
 
 /// 0xf4
 pub fn delegatecall(ctx: &mut ExecutionContext) -> OpcodeResult {
-    dbg!(&ctx.machine_state.stack);
     let stack_items = pop_n(ctx, 6)?;
 
     let _gas = stack_items[0];
@@ -153,7 +152,6 @@ pub fn delegatecall(ctx: &mut ExecutionContext) -> OpcodeResult {
     let old_input = ctx.input.clone();
     let old_machine_state = ctx.machine_state.clone();
 
-    ctx.input.address = modulo_address_size(&address);
     ctx.input.bytecode = if let Some(account_state) = ctx.global_state.get(&address) {
         account_state.code.clone()
     } else {
@@ -183,6 +181,9 @@ pub fn delegatecall(ctx: &mut ExecutionContext) -> OpcodeResult {
     }
     update_active_words_memory(ctx, ret_offset + ret_size);
 
+    // sload then fails because the test supposes no particular account storage.
+    // the problem is the `to` setted up in the test of delegatecall.
+
     Ok(None)
 }
 
@@ -191,4 +192,3 @@ pub fn delegatecall(ctx: &mut ExecutionContext) -> OpcodeResult {
 pub fn revert(ctx: &mut ExecutionContext) -> OpcodeResult {
     r#return(ctx)
 }
-

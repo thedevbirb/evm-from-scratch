@@ -22,6 +22,5 @@ pub fn dup(ctx: &mut ExecutionContext) -> OpcodeResult {
         .for_each(|s_i| ctx.machine_state.stack.push(*s_i));
     ctx.machine_state.stack.push(item_to_dup);
 
-
     Ok(None)
 }
