@@ -1,6 +1,6 @@
 use crate::evm::utils::constants::REVERT;
 
-use super::utils::constants::STOP;
+use super::utils::constants::{NO_STATIC_OPCODES, STOP};
 use super::utils::types::EVMReturnData;
 use super::utils::{errors::EVMError, helpers::get_opcodes, types::ExecutionContext};
 
@@ -23,6 +23,9 @@ impl EVM {
                 break;
             } else if opcode == &REVERT {
                 reverted = true;
+            } else if NO_STATIC_OPCODES.contains(opcode) && !ctx.input.write {
+                reverted = true;
+                break;
             }
 
             let runner = opcodes

@@ -169,6 +169,11 @@ pub struct Input {
     /// contract-creation (i.e. the number of CALLs or
     /// CREATE(2)s being executed at present)
     pub depth: usize,
+
+    /// the permission to make modifications to the state.
+    /// This is also referred as static execution context,
+    /// however `static` is a reserved keyword.
+    pub write: bool,
 }
 
 impl Input {
@@ -184,6 +189,7 @@ impl Input {
             bytecode: Vec::new(),
             block_header: BlockHeader::new(),
             depth: 0,
+            write: true,
         }
     }
 }

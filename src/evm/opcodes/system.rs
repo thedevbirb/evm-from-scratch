@@ -187,6 +187,20 @@ pub fn delegatecall(ctx: &mut ExecutionContext) -> OpcodeResult {
     Ok(None)
 }
 
+/// 0xfa
+pub fn staticcall(ctx: &mut ExecutionContext) -> OpcodeResult {
+    // prepare the call with no write permission
+    let stack_items = pop_n(ctx, 2)?;
+    ctx.machine_state.stack.push(U256::zero()); // zero value;
+    stack_items
+        .iter()
+        .rev()
+        .for_each(|s_i| ctx.machine_state.stack.push(*s_i));
+
+    ctx.input.write = false;
+    call(ctx)
+}
+
 /// 0xfd For this challenge, this is just a return with
 /// difference success status
 pub fn revert(ctx: &mut ExecutionContext) -> OpcodeResult {
