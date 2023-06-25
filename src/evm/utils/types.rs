@@ -234,8 +234,8 @@ impl BlockHeader {
 
 #[derive(Debug)]
 pub struct EVMReturnData {
-    pub success: bool,
     pub output: Option<Vec<u8>>,
+    pub success: bool,
 }
 
 pub type OpcodeResult<'a> = Result<Option<Vec<u8>>, EVMError>;

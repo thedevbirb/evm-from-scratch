@@ -2,7 +2,7 @@ use crate::evm::utils::{
     constants::LOG_0,
     errors::EVMError,
     helpers::{pop_n, update_active_words_memory},
-    types::{ExecutionContext, Log, OpcodeResult, EVMReturnData},
+    types::{ExecutionContext, Log, OpcodeResult},
 };
 
 /// 0xa0 - 0xa4

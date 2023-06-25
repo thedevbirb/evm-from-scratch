@@ -232,11 +232,13 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0x8e, Box::new(opcodes::duplication::dup));
     opcodes.insert(0x8f, Box::new(opcodes::duplication::dup));
     //
+    opcodes.insert(0xf0, Box::new(opcodes::system::create));
     opcodes.insert(0xf1, Box::new(opcodes::system::call));
     opcodes.insert(0xf3, Box::new(opcodes::system::r#return));
     opcodes.insert(0xf4, Box::new(opcodes::system::delegatecall));
     opcodes.insert(0xfa, Box::new(opcodes::system::staticcall));
     opcodes.insert(0xfd, Box::new(opcodes::system::revert));
+    opcodes.insert(0xff, Box::new(opcodes::system::selfdestruct));
     //
     opcodes.insert(0xa0, Box::new(opcodes::logging::log));
     opcodes.insert(0xa1, Box::new(opcodes::logging::log));
