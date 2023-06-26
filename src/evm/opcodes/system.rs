@@ -180,7 +180,7 @@ pub fn call(ctx: &mut ExecutionContext) -> OpcodeResult {
     ctx.machine_state = old_machine_state;
     ctx.machine_state.output = result.output.unwrap_or(Vec::new());
     ctx.machine_state.stack.push(U256::from(if result.success {
-        U256::from(1)
+        U256::one()
     } else {
         U256::zero()
     }));
@@ -276,7 +276,7 @@ pub fn delegatecall(ctx: &mut ExecutionContext) -> OpcodeResult {
     ctx.machine_state = old_machine_state;
     ctx.machine_state.output = result.output.unwrap_or(Vec::new());
     ctx.machine_state.stack.push(U256::from(if result.success {
-        U256::from(1)
+        U256::one()
     } else {
         U256::zero()
     }));

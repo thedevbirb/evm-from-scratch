@@ -106,6 +106,14 @@ pub fn modulo_address_size(val: &U256) -> U256 {
     }
 }
 
+pub fn is_negative(val: &U256) -> bool {
+    val.bit(255)
+}
+
+pub fn convert_twos_complement(val: U256) -> U256 {
+    (!val).overflowing_add(U256::one()).0
+}
+
 pub fn get_opcodes() -> Opcodes {
     let mut opcodes: Opcodes = HashMap::new();
 
@@ -114,12 +122,13 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0x02, Box::new(opcodes::stop_and_arithmetic::mul));
     opcodes.insert(0x03, Box::new(opcodes::stop_and_arithmetic::sub));
     opcodes.insert(0x04, Box::new(opcodes::stop_and_arithmetic::div));
-    //    opcodes.insert(0x05, Box::new(opcodes::arithmetic::s_div));
+    opcodes.insert(0x05, Box::new(opcodes::stop_and_arithmetic::sdiv));
     opcodes.insert(0x06, Box::new(opcodes::stop_and_arithmetic::r#mod));
     //    opcodes.insert(0x07, Box::new(opcodes::arithmetic::s_modulo));
     opcodes.insert(0x08, Box::new(opcodes::stop_and_arithmetic::addmod));
     opcodes.insert(0x09, Box::new(opcodes::stop_and_arithmetic::mulmod));
     opcodes.insert(0x0a, Box::new(opcodes::stop_and_arithmetic::exp));
+    opcodes.insert(0x0b, Box::new(opcodes::stop_and_arithmetic::signextend));
     //
     //    opcodes.insert(0x10, Box::new(opcodes::logic::lt));
     //    opcodes.insert(0x11, Box::new(opcodes::logic::gt));
@@ -165,7 +174,6 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0x47, Box::new(opcodes::block::selfbalance));
     opcodes.insert(0x48, Box::new(opcodes::block::basefee));
     //
-    //    // opcodes.insert(0x0b, Box::new(opcodes::sign_extend));
     opcodes.insert(0x50, Box::new(opcodes::stack_memory_storage_flow::pop));
     opcodes.insert(0x51, Box::new(opcodes::stack_memory_storage_flow::mload));
     opcodes.insert(0x52, Box::new(opcodes::stack_memory_storage_flow::mstore));
