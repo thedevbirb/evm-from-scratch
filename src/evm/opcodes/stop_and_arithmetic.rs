@@ -98,6 +98,38 @@ pub fn r#mod(ctx: &mut ExecutionContext) -> OpcodeResult {
 }
 
 /// 0x07
+pub fn smod(ctx: &mut ExecutionContext) -> OpcodeResult {
+    let stack_items = pop_n(ctx, 2)?;
+
+    let mut a = stack_items[0];
+    let mut n = stack_items[1];
+
+    if n == U256::zero() {
+        ctx.machine_state.stack.push(U256::zero());
+        return Ok(None);
+    }
+
+    let is_a_negative = is_negative(&a);
+    let is_n_negative = is_negative(&n);
+
+    // Recall that $$ka \equiv kb (\mod n)$$ for any integer $k$
+    if is_a_negative {
+        a = convert_twos_complement(a);
+    }
+    if is_n_negative {
+        n = convert_twos_complement(n);
+    }
+
+    if !is_a_negative && !is_n_negative {
+        ctx.machine_state.stack.push(a % n);
+    } else {
+        ctx.machine_state.stack.push(convert_twos_complement(a % n))
+    }
+
+    Ok(None)
+}
+
+/// 0x08
 pub fn addmod(ctx: &mut ExecutionContext) -> OpcodeResult {
     let _ = add(ctx);
     r#mod(ctx)

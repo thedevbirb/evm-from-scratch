@@ -124,7 +124,7 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0x04, Box::new(opcodes::stop_and_arithmetic::div));
     opcodes.insert(0x05, Box::new(opcodes::stop_and_arithmetic::sdiv));
     opcodes.insert(0x06, Box::new(opcodes::stop_and_arithmetic::r#mod));
-    //    opcodes.insert(0x07, Box::new(opcodes::arithmetic::s_modulo));
+    opcodes.insert(0x07, Box::new(opcodes::stop_and_arithmetic::smod));
     opcodes.insert(0x08, Box::new(opcodes::stop_and_arithmetic::addmod));
     opcodes.insert(0x09, Box::new(opcodes::stop_and_arithmetic::mulmod));
     opcodes.insert(0x0a, Box::new(opcodes::stop_and_arithmetic::exp));
