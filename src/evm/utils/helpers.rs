@@ -5,6 +5,7 @@ use primitive_types::U256;
 use crate::evm::opcodes;
 
 use super::{
+    constants::JUMPDEST,
     errors::EVMError,
     types::{ExecutionContext, GlobalState, OpcodeResult, Opcodes},
 };
@@ -125,6 +126,14 @@ pub fn swap_1(ctx: &mut ExecutionContext) -> OpcodeResult {
     Ok(None)
 }
 
+pub fn get_jumpdests(slice: &[u8]) -> Vec<u8> {
+    slice
+        .to_vec()
+        .into_iter()
+        .filter(|byte| *byte == JUMPDEST)
+        .collect()
+}
+
 pub fn get_opcodes() -> Opcodes {
     let mut opcodes: Opcodes = HashMap::new();
 
@@ -191,7 +200,7 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0x55, Box::new(opcodes::stack_memory_storage_flow::sstore));
     //    opcodes.insert(0x56, Box::new(opcodes::stack::jump));
     //    opcodes.insert(0x57, Box::new(opcodes::stack::jumpi));
-    //    opcodes.insert(0x58, Box::new(opcodes::stack::pc));
+    opcodes.insert(0x58, Box::new(opcodes::stack_memory_storage_flow::pc));
     opcodes.insert(0x59, Box::new(opcodes::stack_memory_storage_flow::msize));
     opcodes.insert(0x5a, Box::new(opcodes::stack_memory_storage_flow::gas));
     //    opcodes.insert(0x5b, Box::new(opcodes::stack::jumpdest));
@@ -271,6 +280,7 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0xf4, Box::new(opcodes::system::delegatecall));
     opcodes.insert(0xfa, Box::new(opcodes::system::staticcall));
     opcodes.insert(0xfd, Box::new(opcodes::system::revert));
+    opcodes.insert(0xfe, Box::new(opcodes::system::invalid));
     opcodes.insert(0xff, Box::new(opcodes::system::selfdestruct));
 
     opcodes.insert(0xa0, Box::new(opcodes::logging::log));

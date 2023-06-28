@@ -2,6 +2,7 @@ use primitive_types::U256;
 
 pub const STOP: u8 = 0x00;
 pub const SSTORE: u8 = 0x55;
+pub const JUMPDEST: u8 = 0x5b;
 pub const PUSH_0: u8 = 0x5f;
 pub const PUSH_1: u8 = 0x60;
 pub const DUP_1: u8 = 0x80;
@@ -11,6 +12,7 @@ pub const CREATE: u8 = 0xf0;
 pub const CREATE2: u8 = 0xf5;
 pub const STATICCALL: u8 = 0xfa;
 pub const REVERT: u8 = 0xfd;
+pub const INVALID: u8 = 0xfe;
 pub const SELFDESTRUCT: u8 = 0xff;
 
 pub const NO_STATIC_OPCODES: [u8; 9] = [

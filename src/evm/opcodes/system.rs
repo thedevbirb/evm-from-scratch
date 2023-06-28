@@ -315,6 +315,11 @@ pub fn revert(ctx: &mut ExecutionContext) -> OpcodeResult {
     r#return(ctx)
 }
 
+/// 0xfe
+pub fn invalid(_ctx: &mut ExecutionContext) -> OpcodeResult {
+    Ok(None)
+}
+
 /// 0xff
 pub fn selfdestruct(ctx: &mut ExecutionContext) -> OpcodeResult {
     let receiver_address = modulo_address_size(&pop_n(ctx, 1)?[0]);

@@ -1,6 +1,6 @@
 use crate::evm::utils::constants::REVERT;
 
-use super::utils::constants::{NO_STATIC_OPCODES, SELFDESTRUCT, STOP};
+use super::utils::constants::{INVALID, NO_STATIC_OPCODES, SELFDESTRUCT, STOP};
 use super::utils::types::EVMReturnData;
 use super::utils::{errors::EVMError, helpers::get_opcodes, types::ExecutionContext};
 
@@ -11,6 +11,7 @@ impl EVM {
         let opcodes = get_opcodes();
         let mut output = None;
         let mut reverted = false;
+        let mut invalid = false;
         let mut selfdestruct = false;
 
         while ctx.machine_state.pc < ctx.input.bytecode.len() {
@@ -29,6 +30,10 @@ impl EVM {
                 }
                 SELFDESTRUCT => {
                     selfdestruct = true;
+                }
+                INVALID => {
+                    invalid = true;
+                    break;
                 }
                 _ => {}
             }
@@ -61,7 +66,7 @@ impl EVM {
         }
 
         Ok(EVMReturnData {
-            success: !reverted,
+            success: !reverted && !invalid,
             output,
         })
     }

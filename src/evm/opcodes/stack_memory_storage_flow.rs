@@ -3,7 +3,7 @@ use primitive_types::U256;
 use crate::evm::utils::{
     constants::BYTES_IN_U256_FROM_ZERO,
     errors::EVMError,
-    helpers::{hex_string_from_byte, pop_n, update_active_words_memory},
+    helpers::{hex_string_from_byte, pop_n, update_active_words_memory, get_jumpdests},
     types::{AccountState, ExecutionContext, OpcodeResult},
 };
 
@@ -133,6 +133,25 @@ pub fn sstore(ctx: &mut ExecutionContext) -> OpcodeResult {
         .accessed_storage_keys
         .insert((address, key));
 
+    Ok(None)
+}
+
+pub fn jump(ctx: &mut ExecutionContext) -> OpcodeResult {
+    let counter = pop_n(ctx, 1)?[0];
+    let counter: usize = counter
+        .try_into()
+        .map_err(|_| EVMError::U256ToUSizeError(counter, ctx.clone()))?;
+
+    let jumpdests = get_jumpdests(&ctx.input.bytecode);
+
+    Ok(None)
+}
+
+/// 0x58
+pub fn pc(ctx: &mut ExecutionContext) -> OpcodeResult {
+    ctx.machine_state
+        .stack
+        .push(U256::from(ctx.machine_state.pc));
     Ok(None)
 }
 
