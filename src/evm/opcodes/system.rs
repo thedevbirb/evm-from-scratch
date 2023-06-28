@@ -351,5 +351,5 @@ pub fn selfdestruct(ctx: &mut ExecutionContext) -> OpcodeResult {
         .self_destruct_set
         .insert(ctx.input.address);
 
-    Ok(None)
+    Ok(Some(Vec::new()))
 }

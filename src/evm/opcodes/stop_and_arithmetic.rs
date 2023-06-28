@@ -8,7 +8,7 @@ use crate::evm::utils::{
 
 /// 0x00
 pub fn stop(_ctx: &mut ExecutionContext) -> OpcodeResult {
-    Ok(None)
+    Ok(Some(Vec::new()))
 }
 
 /// 0x01
