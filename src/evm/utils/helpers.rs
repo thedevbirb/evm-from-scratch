@@ -5,7 +5,7 @@ use primitive_types::U256;
 use crate::evm::opcodes;
 
 use super::{
-    constants::JUMPDEST,
+    constants::{JUMPDEST, PUSH_1, PUSH_32},
     errors::EVMError,
     types::{ExecutionContext, GlobalState, OpcodeResult, Opcodes},
 };
@@ -126,12 +126,24 @@ pub fn swap_1(ctx: &mut ExecutionContext) -> OpcodeResult {
     Ok(None)
 }
 
-pub fn get_jumpdests(slice: &[u8]) -> Vec<u8> {
-    slice
-        .to_vec()
-        .into_iter()
-        .filter(|byte| *byte == JUMPDEST)
-        .collect()
+pub fn get_jumpdests(ctx: &mut ExecutionContext) -> Vec<u8> {
+    let mut pc = 0;
+    let mut jumpdests: Vec<u8> = Vec::new();
+
+    while pc < ctx.input.bytecode.len() {
+        let opcode = ctx.input.bytecode.get(pc).unwrap();
+
+        if PUSH_1 <= *opcode && *opcode <= PUSH_32 {
+            let offset: usize = (opcode - PUSH_1 + 1).into();
+            pc += offset;
+        } else if opcode == &JUMPDEST {
+            jumpdests.push(ctx.input.bytecode[pc]);
+        }
+
+        pc += 1;
+    }
+
+    jumpdests
 }
 
 pub fn get_opcodes() -> Opcodes {
@@ -181,7 +193,7 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0x3d, Box::new(opcodes::environmental::returndatasize));
     opcodes.insert(0x3e, Box::new(opcodes::environmental::returndatacopy));
     opcodes.insert(0x3f, Box::new(opcodes::environmental::extcodehash));
-    //
+
     opcodes.insert(0x40, Box::new(opcodes::block::blockhash));
     opcodes.insert(0x41, Box::new(opcodes::block::coinbase));
     opcodes.insert(0x42, Box::new(opcodes::block::timestamp));
@@ -191,20 +203,19 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0x46, Box::new(opcodes::block::chain));
     opcodes.insert(0x47, Box::new(opcodes::block::selfbalance));
     opcodes.insert(0x48, Box::new(opcodes::block::basefee));
-    //
+
     opcodes.insert(0x50, Box::new(opcodes::stack_memory_storage_flow::pop));
     opcodes.insert(0x51, Box::new(opcodes::stack_memory_storage_flow::mload));
     opcodes.insert(0x52, Box::new(opcodes::stack_memory_storage_flow::mstore));
     opcodes.insert(0x53, Box::new(opcodes::stack_memory_storage_flow::mstore8));
     opcodes.insert(0x54, Box::new(opcodes::stack_memory_storage_flow::sload));
     opcodes.insert(0x55, Box::new(opcodes::stack_memory_storage_flow::sstore));
-    //    opcodes.insert(0x56, Box::new(opcodes::stack::jump));
-    //    opcodes.insert(0x57, Box::new(opcodes::stack::jumpi));
+    opcodes.insert(0x56, Box::new(opcodes::stack_memory_storage_flow::jump));
+    opcodes.insert(0x57, Box::new(opcodes::stack_memory_storage_flow::jumpi));
     opcodes.insert(0x58, Box::new(opcodes::stack_memory_storage_flow::pc));
     opcodes.insert(0x59, Box::new(opcodes::stack_memory_storage_flow::msize));
     opcodes.insert(0x5a, Box::new(opcodes::stack_memory_storage_flow::gas));
-    //    opcodes.insert(0x5b, Box::new(opcodes::stack::jumpdest));
-    //
+    opcodes.insert(0x5b, Box::new(opcodes::stack_memory_storage_flow::jumpdest));
 
     opcodes.insert(0x5f, Box::new(opcodes::push::push));
     opcodes.insert(0x60, Box::new(opcodes::push::push));

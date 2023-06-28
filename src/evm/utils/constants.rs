@@ -5,6 +5,7 @@ pub const SSTORE: u8 = 0x55;
 pub const JUMPDEST: u8 = 0x5b;
 pub const PUSH_0: u8 = 0x5f;
 pub const PUSH_1: u8 = 0x60;
+pub const PUSH_32: u8 = 0x7f;
 pub const DUP_1: u8 = 0x80;
 pub const SWAP_1: u8 = 0x90;
 pub const LOG_0: u8 = 0xa0;

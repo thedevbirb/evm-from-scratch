@@ -3,7 +3,7 @@ use primitive_types::U256;
 use crate::evm::utils::{
     constants::BYTES_IN_U256_FROM_ZERO,
     errors::EVMError,
-    helpers::{hex_string_from_byte, pop_n, update_active_words_memory, get_jumpdests},
+    helpers::{get_jumpdests, hex_string_from_byte, pop_n, update_active_words_memory},
     types::{AccountState, ExecutionContext, OpcodeResult},
 };
 
@@ -136,15 +136,42 @@ pub fn sstore(ctx: &mut ExecutionContext) -> OpcodeResult {
     Ok(None)
 }
 
+/// 0x56
 pub fn jump(ctx: &mut ExecutionContext) -> OpcodeResult {
     let counter = pop_n(ctx, 1)?[0];
     let counter: usize = counter
         .try_into()
         .map_err(|_| EVMError::U256ToUSizeError(counter, ctx.clone()))?;
 
-    let jumpdests = get_jumpdests(&ctx.input.bytecode);
+    let jumpdests = get_jumpdests(ctx);
+
+    let can_jump = jumpdests.contains(
+        ctx.input
+            .bytecode
+            .get(counter)
+            .ok_or(EVMError::NoBytecodeError(ctx.clone()))?,
+    );
+
+    if !can_jump {
+        return Err(EVMError::InvalidJumpdestError(counter, ctx.clone()));
+    }
+
+    ctx.machine_state.pc = counter;
 
     Ok(None)
+}
+
+/// 0x57
+pub fn jumpi(ctx: &mut ExecutionContext) -> OpcodeResult {
+    let stack_items = pop_n(ctx, 2)?;
+    let condition = stack_items[1];
+
+    if condition == U256::zero() {
+        Ok(None)
+    } else {
+        ctx.machine_state.stack.push(stack_items[0]);
+        jump(ctx)
+    }
 }
 
 /// 0x58
@@ -165,5 +192,10 @@ pub fn msize(ctx: &mut ExecutionContext) -> OpcodeResult {
 /// 0x5a not implemented
 pub fn gas(ctx: &mut ExecutionContext) -> OpcodeResult {
     ctx.machine_state.stack.push(U256::MAX);
+    Ok(None)
+}
+
+/// 0x5b
+pub fn jumpdest(_ctx: &mut ExecutionContext) -> OpcodeResult {
     Ok(None)
 }

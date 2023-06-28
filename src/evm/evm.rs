@@ -10,8 +10,7 @@ impl EVM {
     pub fn execute(ctx: &mut ExecutionContext) -> Result<EVMReturnData, EVMError> {
         let opcodes = get_opcodes();
         let mut output = None;
-        let mut reverted = false;
-        let mut invalid = false;
+        let mut success = true;
 
         while ctx.machine_state.pc < ctx.input.bytecode.len() {
             let opcode = ctx
@@ -22,17 +21,17 @@ impl EVM {
 
             match *opcode {
                 REVERT => {
-                    reverted = true;
+                    success = false;
                 }
                 INVALID => {
-                    invalid = true;
+                    success = false;
                     break;
                 }
                 _ => {}
             }
 
             if NO_STATIC_OPCODES.contains(opcode) && !ctx.input.write {
-                reverted = true;
+                success = false;
                 break;
             }
 
@@ -40,7 +39,16 @@ impl EVM {
                 .get(opcode)
                 .ok_or(EVMError::NoOpcodeError(*opcode, ctx.clone()))?;
 
-            output = runner(ctx)?;
+            output = match runner(ctx) {
+                Ok(option) => option,
+                Err(e) => match e {
+                    EVMError::InvalidJumpdestError(_, _) => {
+                        success = false;
+                        break;
+                    }
+                    _ => return Err(e),
+                },
+            };
 
             ctx.machine_state.pc += 1;
 
@@ -56,9 +64,6 @@ impl EVM {
                 ctx.global_state.remove(account);
             });
 
-        Ok(EVMReturnData {
-            success: !reverted && !invalid,
-            output,
-        })
+        Ok(EVMReturnData { success, output })
     }
 }

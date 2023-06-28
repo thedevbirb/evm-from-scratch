@@ -11,6 +11,7 @@ pub enum EVMError {
     EmptyStackError(ExecutionContext),
     U256ToUSizeError(U256, ExecutionContext),
     U256ToU8Error(U256, ExecutionContext),
+    InvalidJumpdestError(usize, ExecutionContext),
 }
 
 impl fmt::Display for EVMError {
@@ -33,6 +34,9 @@ impl fmt::Display for EVMError {
             }
             EVMError::U256ToU8Error(val, _) => {
                 write!(f, "cannot convert from U256 {:x?} to u8", val)
+            }
+            EVMError::InvalidJumpdestError(val, _) => {
+                write!(f, "cannot jump to opcode {:x?}", val)
             }
         }
     }
@@ -66,6 +70,13 @@ impl fmt::Debug for EVMError {
             }
             EVMError::U256ToU8Error(val, ctx) => {
                 write!(f, "U256ToU8Error\n    val: {:x}\n    ctx: {:x?}", val, ctx)
+            }
+            EVMError::InvalidJumpdestError(val, ctx) => {
+                write!(
+                    f,
+                    "InvalidJumpdestError\n    val: {:x}\n    ctx: {:x?}",
+                    val, ctx
+                )
             }
         }
     }
