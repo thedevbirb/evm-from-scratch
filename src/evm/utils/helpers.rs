@@ -6,7 +6,7 @@ use crate::evm::opcodes;
 
 use super::{
     errors::EVMError,
-    types::{ExecutionContext, GlobalState, Opcodes},
+    types::{ExecutionContext, GlobalState, OpcodeResult, Opcodes},
 };
 
 /// Models the EMPTY function in the yellow paper
@@ -114,6 +114,17 @@ pub fn convert_twos_complement(val: U256) -> U256 {
     (!val).overflowing_add(U256::one()).0
 }
 
+pub fn swap_1(ctx: &mut ExecutionContext) -> OpcodeResult {
+    let stack_items = pop_n(ctx, 2)?;
+    let first = stack_items[0];
+    let last = stack_items[1];
+
+    ctx.machine_state.stack.push(first);
+    ctx.machine_state.stack.push(last);
+
+    Ok(None)
+}
+
 pub fn get_opcodes() -> Opcodes {
     let mut opcodes: Opcodes = HashMap::new();
 
@@ -129,24 +140,22 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0x09, Box::new(opcodes::stop_and_arithmetic::mulmod));
     opcodes.insert(0x0a, Box::new(opcodes::stop_and_arithmetic::exp));
     opcodes.insert(0x0b, Box::new(opcodes::stop_and_arithmetic::signextend));
-    //
-    //    opcodes.insert(0x10, Box::new(opcodes::logic::lt));
-    //    opcodes.insert(0x11, Box::new(opcodes::logic::gt));
-    //    opcodes.insert(0x12, Box::new(opcodes::logic::slt));
-    //    opcodes.insert(0x13, Box::new(opcodes::logic::sgt));
-    //    opcodes.insert(0x14, Box::new(opcodes::logic::eq));
-    //    opcodes.insert(0x15, Box::new(opcodes::logic::is_zero));
-    //    opcodes.insert(0x16, Box::new(opcodes::logic::and));
-    //    opcodes.insert(0x17, Box::new(opcodes::logic::or));
-    //    opcodes.insert(0x18, Box::new(opcodes::logic::xor));
-    //    opcodes.insert(0x19, Box::new(opcodes::logic::not));
-    //
-    //    opcodes.insert(0x1b, Box::new(opcodes::misc::shl));
-    //    opcodes.insert(0x1c, Box::new(opcodes::misc::shr));
-    //    opcodes.insert(0x1d, Box::new(opcodes::misc::sar));
-    //    opcodes.insert(0x1a, Box::new(opcodes::misc::byte));
+    opcodes.insert(0x10, Box::new(opcodes::comparison_and_bitwise::lt));
+    opcodes.insert(0x11, Box::new(opcodes::comparison_and_bitwise::gt));
+    opcodes.insert(0x12, Box::new(opcodes::comparison_and_bitwise::slt));
+    opcodes.insert(0x13, Box::new(opcodes::comparison_and_bitwise::sgt));
+    opcodes.insert(0x14, Box::new(opcodes::comparison_and_bitwise::eq));
+    opcodes.insert(0x15, Box::new(opcodes::comparison_and_bitwise::iszero));
+    opcodes.insert(0x16, Box::new(opcodes::comparison_and_bitwise::and));
+    opcodes.insert(0x17, Box::new(opcodes::comparison_and_bitwise::or));
+    opcodes.insert(0x18, Box::new(opcodes::comparison_and_bitwise::xor));
+    opcodes.insert(0x19, Box::new(opcodes::comparison_and_bitwise::not));
+    opcodes.insert(0x1b, Box::new(opcodes::comparison_and_bitwise::shl));
+    opcodes.insert(0x1c, Box::new(opcodes::comparison_and_bitwise::shr));
+    opcodes.insert(0x1d, Box::new(opcodes::comparison_and_bitwise::sar));
+    opcodes.insert(0x1a, Box::new(opcodes::comparison_and_bitwise::byte));
+
     opcodes.insert(0x20, Box::new(opcodes::sha_3::sha3));
-    //
     opcodes.insert(0x30, Box::new(opcodes::environmental::address));
     opcodes.insert(0x31, Box::new(opcodes::environmental::balance));
     opcodes.insert(0x32, Box::new(opcodes::environmental::origin));
@@ -185,7 +194,6 @@ pub fn get_opcodes() -> Opcodes {
     //    opcodes.insert(0x58, Box::new(opcodes::stack::pc));
     opcodes.insert(0x59, Box::new(opcodes::stack_memory_storage_flow::msize));
     opcodes.insert(0x5a, Box::new(opcodes::stack_memory_storage_flow::gas));
-    //    opcodes.insert(0x5a, Box::new(opcodes::misc::gas));
     //    opcodes.insert(0x5b, Box::new(opcodes::stack::jumpdest));
     //
 
@@ -222,7 +230,7 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0x7d, Box::new(opcodes::push::push));
     opcodes.insert(0x7e, Box::new(opcodes::push::push));
     opcodes.insert(0x7f, Box::new(opcodes::push::push));
-    //
+
     opcodes.insert(0x80, Box::new(opcodes::duplication::dup));
     opcodes.insert(0x81, Box::new(opcodes::duplication::dup));
     opcodes.insert(0x82, Box::new(opcodes::duplication::dup));
@@ -239,7 +247,24 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0x8d, Box::new(opcodes::duplication::dup));
     opcodes.insert(0x8e, Box::new(opcodes::duplication::dup));
     opcodes.insert(0x8f, Box::new(opcodes::duplication::dup));
-    //
+
+    opcodes.insert(0x90, Box::new(opcodes::exchange::swap));
+    opcodes.insert(0x91, Box::new(opcodes::exchange::swap));
+    opcodes.insert(0x92, Box::new(opcodes::exchange::swap));
+    opcodes.insert(0x93, Box::new(opcodes::exchange::swap));
+    opcodes.insert(0x94, Box::new(opcodes::exchange::swap));
+    opcodes.insert(0x95, Box::new(opcodes::exchange::swap));
+    opcodes.insert(0x96, Box::new(opcodes::exchange::swap));
+    opcodes.insert(0x97, Box::new(opcodes::exchange::swap));
+    opcodes.insert(0x98, Box::new(opcodes::exchange::swap));
+    opcodes.insert(0x99, Box::new(opcodes::exchange::swap));
+    opcodes.insert(0x9a, Box::new(opcodes::exchange::swap));
+    opcodes.insert(0x9b, Box::new(opcodes::exchange::swap));
+    opcodes.insert(0x9c, Box::new(opcodes::exchange::swap));
+    opcodes.insert(0x9d, Box::new(opcodes::exchange::swap));
+    opcodes.insert(0x9e, Box::new(opcodes::exchange::swap));
+    opcodes.insert(0x9f, Box::new(opcodes::exchange::swap));
+
     opcodes.insert(0xf0, Box::new(opcodes::system::create));
     opcodes.insert(0xf1, Box::new(opcodes::system::call));
     opcodes.insert(0xf3, Box::new(opcodes::system::r#return));
@@ -247,7 +272,7 @@ pub fn get_opcodes() -> Opcodes {
     opcodes.insert(0xfa, Box::new(opcodes::system::staticcall));
     opcodes.insert(0xfd, Box::new(opcodes::system::revert));
     opcodes.insert(0xff, Box::new(opcodes::system::selfdestruct));
-    //
+
     opcodes.insert(0xa0, Box::new(opcodes::logging::log));
     opcodes.insert(0xa1, Box::new(opcodes::logging::log));
     opcodes.insert(0xa2, Box::new(opcodes::logging::log));

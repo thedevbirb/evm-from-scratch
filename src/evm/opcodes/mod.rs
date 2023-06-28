@@ -1,6 +1,8 @@
 pub mod block;
+pub mod comparison_and_bitwise;
 pub mod duplication;
 pub mod environmental;
+pub mod exchange;
 pub mod logging;
 pub mod push;
 pub mod sha_3;
